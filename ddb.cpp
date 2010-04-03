@@ -184,7 +184,13 @@ ddb::run(void)
     }
     else if(do_initialize)
     {
+        bool r =
         initialize_database();
+
+        if(!r)
+        {
+            cerr << "Error initializing database" << endl;
+        }
     }
     else    // Search
     {
@@ -280,7 +286,34 @@ ddb::list_contents(void)
 bool
 ddb::initialize_database(void)
 {
-    return false;
+    // Create the table
+    int result =
+    sqlite3_exec(db, discdb_schema, NULL, NULL, NULL);
+
+    if(result != SQLITE_OK)
+    {
+        if(verbosity >= 1)
+        {
+            cerr << "Error creating table!" << endl
+                 << endl;
+        }
+
+        return false;
+    }
+
+    // Check the table again
+    if(!is_discdb())
+    {
+        if(verbosity >= 1)
+        {
+            cerr << "Table was not created!" << endl
+                 << endl;
+        }
+
+        return false;
+    }
+
+    return true;
 }
 
 bool
