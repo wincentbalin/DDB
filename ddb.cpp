@@ -162,7 +162,7 @@ ddb::run(void)
     }
 
     // Check whether the database has table ddb
-    if(!is_discdb())
+    if(!do_initialize && !is_discdb())
     {
         cerr << "Wrong database " << db_filename << endl;
         sqlite3_close(db);
