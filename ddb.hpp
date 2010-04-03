@@ -24,6 +24,10 @@
 
 using namespace std;
 
+// Name of the table
+#define TABLE_NAME "ddb"
+
+
 
 class ddb
 {
@@ -31,6 +35,9 @@ public:
     ddb(int argc, char** argv);
     ~ddb(void);
     void run(void);
+    static bool is_discdb(sqlite3* db);
+    // Constants
+    const static char* discdb_schema;
 private:
     void print_help(void);
     void msg(int min_verbosity, char* message);
@@ -47,5 +54,13 @@ private:
     bool directories_only;
     int verbosity;
 };
+
+
+// discdb schema
+const char* ddb::discdb_schema =
+    "CREATE TABLE "TABLE_NAME" "
+    "(directory TEXT NOT NULL, file TEXT, disc TEXT NOT NULL)";
+
+
 
 #endif /* DDB_HPP */

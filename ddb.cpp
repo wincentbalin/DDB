@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include <cstdlib>
+#include <cstring>
 
 #include <getopt.h>
 
@@ -144,6 +145,77 @@ ddb::~ddb(void)
 void
 ddb::run(void)
 {
+    int result;
+
+    // Open database
+    result =
+    sqlite3_open(db_filename.c_str(), &db);
+
+    if(result != SQLITE_OK)
+    {
+        cerr << "Error while opening database " << db_filename << " : "
+             << sqlite3_errmsg(db) << endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Check whether the database has table ddb
+    if(!is_discdb(db))
+    {
+        cerr << "Wrong database " << db_filename << endl;
+        return;
+    }
+
+    // Close database
+    sqlite3_close(db);
+}
+
+bool
+ddb::is_discdb(sqlite3* db)
+{
+    const char* check_discdb_table =
+        "SELECT sql FROM "
+        "(SELECT sql sql, type type, tbl_name tbl_name, name name FROM "
+        "sqlite_master UNION ALL "
+        "SELECT sql, type, tbl_name, name FROM sqlite_temp_master) "
+        "WHERE tbl_name LIKE '"TABLE_NAME"' AND type!='meta' AND sql NOTNULL "
+        "ORDER BY substr(type,2,1), name";
+    int result;
+    sqlite3_stmt* stmt;
+
+    sqlite3_prepare_v2(db, check_discdb_table, -1, &stmt, NULL);
+
+    result =
+    sqlite3_step(stmt);
+
+    if(result != SQLITE_ROW || sqlite3_column_count(stmt) != 1)
+    {
+//        cerr << "Error checking database: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
+
+    const char* schema = (const char*) sqlite3_column_text(stmt, 0);
+
+    if(strncmp(schema, discdb_schema, strlen(discdb_schema)) != 0)
+    {
+//        cerr << "Database has wrong schema!" << endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
+
+    result =
+    sqlite3_step(stmt);
+
+    if(result != SQLITE_DONE)
+    {
+//        cerr << "Something wrong with the database: "
+//             << sqlite3_errmsg(db)<< endl;
+        sqlite3_finalize(stmt);
+        return false;
+    }
+
+    sqlite3_finalize(stmt);
+    return true;
 }
 
 void
