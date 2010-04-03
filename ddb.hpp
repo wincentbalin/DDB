@@ -18,6 +18,8 @@
 #define DDB_HPP
 
 #include <string>
+#include <vector>
+#include <algorithm>
 
 #include <sqlite3.h>
 
@@ -37,14 +39,18 @@ class ddb
 public:
     ddb(int argc, char** argv);
     ~ddb(void);
-    void run(void);
+    bool run(void);
     // Constants
     const static char* discdb_schema;
 private:
     bool is_discdb(void);
+    bool is_disc_present(string& name);
     inline bool add_disc(void);
     inline bool remove_disc(void);
     inline bool list_contents(void);
+    inline bool list_discs(void);
+    inline bool list_directories(void);
+    inline bool list_files(void);
     inline bool initialize_database(void);
     inline bool search_text(void);
     void print_help(void);

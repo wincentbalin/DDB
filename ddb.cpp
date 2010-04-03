@@ -134,14 +134,17 @@ ddb::~ddb(void)
 {
 }
 
-void
+bool
 ddb::run(void)
 {
     int result;
+    bool success = true;
 
     // Open database
+    msg(2, "Opening database...");
     result =
     sqlite3_open(db_filename.c_str(), &db);
+    msg(3, "Done.");
 
     if(result != SQLITE_OK)
     {
@@ -155,39 +158,61 @@ ddb::run(void)
     {
         cerr << "Wrong database " << db_filename << endl;
         sqlite3_close(db);
-        return;
+        return false;
     }
 
     // Choose functionality to run
     if(do_add)
     {
+        success =
         add_disc();
+
+        if(!success)
+        {
+            cerr << "Error while adding disc " << disc_name << endl;
+        }
     }
     else if(do_remove)
     {
+        success =
         remove_disc();
+
+        if(!success)
+        {
+            cerr << "Error while removing disc " << disc_name << endl;
+        }
     }
     else if(do_list)
     {
+        success =
         list_contents();
+
+        if(!success)
+        {
+            cerr << "Error while listing contents" << endl;
+        }
     }
     else if(do_initialize)
     {
-        bool r =
+        success =
         initialize_database();
 
-        if(!r)
+        if(!success)
         {
             cerr << "Error initializing database" << endl;
         }
     }
-    else    // Search
+    else    // If nothing else specified, search text
     {
         search_text();
     }
 
     // Close database
+    msg(2, "Closing the database...");
     sqlite3_close(db);
+    msg(3, "Done.");
+
+    return success;
 }
 
 bool
@@ -255,6 +280,32 @@ ddb::is_discdb(void)
 }
 
 bool
+ddb::is_disc_present(string& name)
+{
+    const char* disc_present =
+        "SELECT DISTINCT disc FROM ddb WHERE disc LIKE ?";
+    int result;
+    sqlite3_stmt* stmt;
+
+    sqlite3_prepare_v2(db, disc_present, -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+
+    result =
+    sqlite3_step(stmt);
+
+    // A row means that the disc is present
+    if(result == SQLITE_ROW)
+    {
+        sqlite3_finalize(stmt);
+        return true;
+    }
+
+    sqlite3_finalize(stmt);
+    return false;
+}
+
+bool
 ddb::add_disc(void)
 {
     return false;
@@ -269,7 +320,191 @@ ddb::remove_disc(void)
 bool
 ddb::list_contents(void)
 {
-    return false;
+    if(directories_only)
+    {
+        return list_directories();
+    }
+    else if(argument.length() > 0)
+    {
+        return list_files();
+    }
+    else
+    {
+        return list_discs();
+    }
+}
+
+bool
+ddb::list_discs(void)
+{
+    const char* list_discs = "SELECT DISTINCT disc FROM ddb";
+    int result;
+    sqlite3_stmt* stmt;
+    vector<string> discs;
+
+    sqlite3_prepare_v2(db, list_discs, -1, &stmt, NULL);
+
+    // Fetch results
+    while(true)
+    {
+        result =
+        sqlite3_step(stmt);
+
+        if(result == SQLITE_ROW)
+        {
+            // Store results
+            string s = (const char*) sqlite3_column_text(stmt, 0);
+            discs.push_back(s);
+        }
+        else    // End or error
+        {
+            sqlite3_finalize(stmt);
+
+            if(result == SQLITE_DONE)
+            {
+                break;
+            }
+            else
+            {
+                if(verbosity >= 1)
+                {
+                    cerr << "Error while listing contents!" << endl
+                         << endl;
+                }
+
+                return false;
+            }
+        }
+    }
+
+    // Sort and print results
+    sort(discs.begin(), discs.end());
+
+    vector<string>::const_iterator i;
+    for(i = discs.begin(); i != discs.end(); i++)
+    {
+        cout << *i << endl;
+    }
+
+    return true;
+}
+
+bool
+ddb::list_directories(void)
+{
+    const char* list_dirs =
+        "SELECT DISTINCT directory FROM ddb WHERE disc LIKE ?";
+    int result;
+    sqlite3_stmt* stmt;
+    vector<string> directories;
+
+    sqlite3_prepare_v2(db, list_dirs, -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, argument.c_str(), -1, SQLITE_STATIC);
+
+    // Fetch results
+    while(true)
+    {
+        result =
+        sqlite3_step(stmt);
+
+        if(result == SQLITE_ROW)
+        {
+            // Store results
+            string s = (const char*) sqlite3_column_text(stmt, 0);
+            directories.push_back(s);
+        }
+        else    // End or error
+        {
+            sqlite3_finalize(stmt);
+
+            if(result == SQLITE_DONE)
+            {
+                break;
+            }
+            else
+            {
+                if(verbosity >= 1)
+                {
+                    cerr << "Error while listing contents!" << endl
+                         << endl;
+                }
+
+                return false;
+            }
+        }
+    }
+
+    // Sort and print results
+    sort(directories.begin(), directories.end());
+
+    vector<string>::const_iterator i;
+    for(i = directories.begin(); i != directories.end(); i++)
+    {
+        cout << *i << endl;
+    }
+
+    return true;
+}
+
+bool
+ddb::list_files(void)
+{
+    const char* list_files =
+        "SELECT directory,file FROM ddb WHERE disc LIKE ?";
+    int result;
+    sqlite3_stmt* stmt;
+    vector<string> files;
+
+    sqlite3_prepare_v2(db, list_files, -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, argument.c_str(), -1, SQLITE_STATIC);
+
+    // Fetch results
+    while(true)
+    {
+        result =
+        sqlite3_step(stmt);
+
+        if(result == SQLITE_ROW)
+        {
+            // Store results
+            string path;
+            path.append((const char*) sqlite3_column_text(stmt, 0));
+            path.append((const char*) sqlite3_column_text(stmt, 1));
+            files.push_back(path);
+        }
+        else    // End or error
+        {
+            sqlite3_finalize(stmt);
+
+            if(result == SQLITE_DONE)
+            {
+                break;
+            }
+            else
+            {
+                if(verbosity >= 1)
+                {
+                    cerr << "Error while listing contents!" << endl
+                         << endl;
+                }
+
+                return false;
+            }
+        }
+    }
+
+    // Sort and print results
+    sort(files.begin(), files.end());
+
+    vector<string>::const_iterator i;
+    for(i = files.begin(); i != files.end(); i++)
+    {
+        cout << *i << endl;
+    }
+
+    return true;
 }
 
 bool
@@ -345,7 +580,5 @@ int main(int argc, char** argv)
 {
     ddb ddb(argc, argv);
 
-    ddb.run();
-
-    return EXIT_SUCCESS;
+    return ddb.run() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
