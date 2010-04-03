@@ -39,16 +39,16 @@ ddb::ddb(int argc, char** argv) :
     int ch, option_index;
     static struct option long_options[] =
     {
-        {"add",          1, 0, 'a'},
-        {"directory",    0, 0, 'd'},
-        {"file",         1, 0, 'f'},
-        {"help",         0, 0, 'h'},
-        {"initialize",   0, 0, 'i'},
-        {"list",         0, 0, 'l'},
-        {"quite",        0, 0, 'q'},
-        {"remove",       1, 0, 'r'},
-        {"verbose",      0, 0, 'v'},
-        { 0,             0, 0,  0 }
+        {"add",          required_argument, 0, 'a'},
+        {"directory",    no_argument,       0, 'd'},
+        {"file",         required_argument, 0, 'f'},
+        {"help",         no_argument,       0, 'h'},
+        {"initialize",   no_argument,       0, 'i'},
+        {"list",         optional_argument, 0, 'l'},
+        {"quite",        no_argument,       0, 'q'},
+        {"remove",       required_argument, 0, 'r'},
+        {"verbose",      no_argument,       0, 'v'},
+        { 0,             0,                 0,  0 }
     };
 
     // If no command line arguments given, print help and exit
@@ -64,7 +64,7 @@ ddb::ddb(int argc, char** argv) :
     // Process command line arguments
     while(true)
     {
-        ch = getopt_long(argc, argv, "a:df:hilqr:v", long_options, &option_index);
+        ch = getopt_long(argc, argv, "a:df:hil:qr:v", long_options, &option_index);
 
         if(ch == -1)
             break;
