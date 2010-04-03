@@ -54,8 +54,7 @@ private:
     // Configuration flags
     string db_filename;
     string disc_name;
-    string disc_root;
-    string text;
+    string argument;
     bool do_initialize;
     bool do_add;
     bool do_list;

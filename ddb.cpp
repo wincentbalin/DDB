@@ -58,13 +58,10 @@ ddb::ddb(int argc, char** argv) :
         exit(EXIT_FAILURE);
     }
 
-    // Set searched name
-    text = argv[argc-1];
-
     // Process command line arguments
     while(true)
     {
-        ch = getopt_long(argc, argv, "a:df:hil:qr:v", long_options, &option_index);
+        ch = getopt_long(argc, argv, "a:df:hilqr:v", long_options, &option_index);
 
         if(ch == -1)
             break;
@@ -74,7 +71,6 @@ ddb::ddb(int argc, char** argv) :
             // Add disc
             case 'a':
                 disc_name = optarg;
-                disc_root = argv[argc-1];
                 break;
 
             // Directories only
@@ -101,11 +97,6 @@ ddb::ddb(int argc, char** argv) :
             // List
             case 'l':
                 do_list = true;
-                // Store disc name if needed
-                if(optarg)
-                {
-                    disc_name = optarg;
-                }
                 break;
 
             // Quite
@@ -116,15 +107,7 @@ ddb::ddb(int argc, char** argv) :
             // Remove disc
             case 'r':
                 do_remove = true;
-                if(optarg)
-                {
-                    disc_name = optarg;
-                }
-                else
-                {
-                    print_help();
-                    exit(EXIT_FAILURE);
-                }
+                disc_name = optarg;
                 break;
 
             // Verbosity
