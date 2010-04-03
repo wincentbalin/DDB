@@ -122,6 +122,12 @@ ddb::ddb(int argc, char** argv) :
                 break;
         }
     }
+
+    // Save last argument
+    if(argv[argc-1][0] != '-')
+    {
+        argument = argv[argc-1];
+    }
 }
 
 ddb::~ddb(void)
