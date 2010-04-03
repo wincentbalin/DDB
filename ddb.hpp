@@ -39,7 +39,7 @@ private:
     // Configuration flags
     string db_filename;
     string disc_name;
-    string adding_filename;
+    string disc_root;
     bool do_initialize;
     bool do_add;
     bool do_list;

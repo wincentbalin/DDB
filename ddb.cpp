@@ -70,7 +70,7 @@ ddb::ddb(int argc, char** argv) :
             // Add disc
             case 'a':
                 disc_name = optarg;
-                adding_filename = argv[argc-1];
+                disc_root = argv[argc-1];
                 break;
 
             // Directories only
