@@ -169,6 +169,28 @@ ddb::run(void)
         return;
     }
 
+    // Choose functionality to run
+    if(do_add)
+    {
+        add();
+    }
+    else if(do_remove)
+    {
+        remove();
+    }
+    else if(do_list)
+    {
+        list();
+    }
+    else if(do_initialize)
+    {
+        initialize();
+    }
+    else    // Search
+    {
+        search();
+    }
+
     // Close database
     sqlite3_close(db);
 }
@@ -220,6 +242,36 @@ ddb::is_discdb(void)
 
     sqlite3_finalize(stmt);
     return true;
+}
+
+bool
+ddb::add(void)
+{
+    return false;
+}
+
+bool
+ddb::remove(void)
+{
+    return false;
+}
+
+bool
+ddb::list(void)
+{
+    return false;
+}
+
+bool
+ddb::initialize(void)
+{
+    return false;
+}
+
+bool
+ddb::search(void)
+{
+    return false;
 }
 
 void

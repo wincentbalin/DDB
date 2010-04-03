@@ -38,6 +38,12 @@ public:
     // Constants
     const static char* discdb_schema;
 private:
+    inline bool is_discdb(void);
+    inline bool add(void);
+    inline bool remove(void);
+    inline bool list(void);
+    inline bool initialize(void);
+    inline bool search(void);
     void print_help(void);
     void msg(int min_verbosity, char* message);
     // Database handle
