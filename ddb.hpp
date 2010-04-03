@@ -35,7 +35,6 @@ public:
     ddb(int argc, char** argv);
     ~ddb(void);
     void run(void);
-    static bool is_discdb(sqlite3* db);
     // Constants
     const static char* discdb_schema;
 private:

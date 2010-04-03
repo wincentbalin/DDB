@@ -159,7 +159,7 @@ ddb::run(void)
     }
 
     // Check whether the database has table ddb
-    if(!is_discdb(db))
+    if(!is_discdb())
     {
         cerr << "Wrong database " << db_filename << endl;
         return;
@@ -170,7 +170,7 @@ ddb::run(void)
 }
 
 bool
-ddb::is_discdb(sqlite3* db)
+ddb::is_discdb(void)
 {
     const char* check_discdb_table =
         "SELECT sql FROM "
