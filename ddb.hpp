@@ -46,6 +46,7 @@ private:
     string db_filename;
     string disc_name;
     string disc_root;
+    string search_name;
     bool do_initialize;
     bool do_add;
     bool do_list;

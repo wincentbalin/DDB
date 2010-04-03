@@ -58,6 +58,9 @@ ddb::ddb(int argc, char** argv) :
         exit(EXIT_FAILURE);
     }
 
+    // Set searched name
+    search_name = argv[argc-1];
+
     // Process command line arguments
     while(true)
     {
