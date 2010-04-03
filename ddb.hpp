@@ -39,11 +39,11 @@ public:
     const static char* discdb_schema;
 private:
     inline bool is_discdb(void);
-    inline bool add(void);
-    inline bool remove(void);
-    inline bool list(void);
-    inline bool initialize(void);
-    inline bool search(void);
+    inline bool add_disc(void);
+    inline bool remove_disc(void);
+    inline bool list_contents(void);
+    inline bool initialize_database(void);
+    inline bool search_text(void);
     void print_help(void);
     void msg(int min_verbosity, char* message);
     // Database handle
@@ -52,7 +52,7 @@ private:
     string db_filename;
     string disc_name;
     string disc_root;
-    string search_name;
+    string text;
     bool do_initialize;
     bool do_add;
     bool do_list;

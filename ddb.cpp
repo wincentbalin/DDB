@@ -59,7 +59,7 @@ ddb::ddb(int argc, char** argv) :
     }
 
     // Set searched name
-    search_name = argv[argc-1];
+    text = argv[argc-1];
 
     // Process command line arguments
     while(true)
@@ -172,23 +172,23 @@ ddb::run(void)
     // Choose functionality to run
     if(do_add)
     {
-        add();
+        add_disc();
     }
     else if(do_remove)
     {
-        remove();
+        remove_disc();
     }
     else if(do_list)
     {
-        list();
+        list_contents();
     }
     else if(do_initialize)
     {
-        initialize();
+        initialize_database();
     }
     else    // Search
     {
-        search();
+        search_text();
     }
 
     // Close database
@@ -245,31 +245,31 @@ ddb::is_discdb(void)
 }
 
 bool
-ddb::add(void)
+ddb::add_disc(void)
 {
     return false;
 }
 
 bool
-ddb::remove(void)
+ddb::remove_disc(void)
 {
     return false;
 }
 
 bool
-ddb::list(void)
+ddb::list_contents(void)
 {
     return false;
 }
 
 bool
-ddb::initialize(void)
+ddb::initialize_database(void)
 {
     return false;
 }
 
 bool
-ddb::search(void)
+ddb::search_text(void)
 {
     return false;
 }
