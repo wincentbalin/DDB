@@ -543,7 +543,73 @@ ddb::initialize_database(void)
 bool
 ddb::search_text(void)
 {
-    return false;
+    const char* search = directories_only ?
+        "SELECT disc,directory,file FROM ddb WHERE directory LIKE ?" :
+        "SELECT disc,directory,file FROM ddb WHERE file LIKE ?";
+    int result;
+    sqlite3_stmt* stmt;
+    vector<pair<string, string> > files;
+
+    sqlite3_prepare_v2(db, search, -1, &stmt, NULL);
+
+    // Create query with wildcards
+    string wildcard;
+    wildcard.append("%");
+    wildcard.append(argument);
+    wildcard.append("%");
+
+    // Bind the query
+    sqlite3_bind_text(stmt, 1, wildcard.c_str(), -1, SQLITE_STATIC);
+
+    // Fetch results
+    while(true)
+    {
+        result =
+        sqlite3_step(stmt);
+
+        if(result == SQLITE_ROW)
+        {
+            // Store results
+            string disc;
+            disc.append((const char*) sqlite3_column_text(stmt, 0));
+            string path;
+            path.append((const char*) sqlite3_column_text(stmt, 1));
+            path.append("/");
+            path.append((const char*) sqlite3_column_text(stmt, 2));
+
+            files.push_back(make_pair(disc, path));
+        }
+        else    // End or error
+        {
+            sqlite3_finalize(stmt);
+
+            if(result == SQLITE_DONE)
+            {
+                break;
+            }
+            else
+            {
+                if(verbosity >= 1)
+                {
+                    cerr << "Error while listing contents!" << endl
+                         << endl;
+                }
+
+                return false;
+            }
+        }
+    }
+
+    // Sort and print results
+    sort(files.begin(), files.end());
+
+    vector<pair<string, string> >::const_iterator i;
+    for(i = files.begin(); i != files.end(); i++)
+    {
+        cout << (*i).first << ":\t" << (*i).second << endl;
+    }
+
+    return true;
 }
 
 void
