@@ -165,6 +165,7 @@ ddb::run(void)
     if(!is_discdb())
     {
         cerr << "Wrong database " << db_filename << endl;
+        sqlite3_close(db);
         return;
     }
 
