@@ -215,8 +215,11 @@ ddb::is_discdb(void)
 
     if(result != SQLITE_ROW || sqlite3_column_count(stmt) != 1)
     {
-        cerr << "Error checking database: " << sqlite3_errmsg(db) << endl
-             << endl;
+        if(verbosity >= 1)
+        {
+            cerr << "Error checking database: " << sqlite3_errmsg(db) << endl
+                 << endl;
+        }
 
         sqlite3_finalize(stmt);
         return false;
@@ -226,8 +229,11 @@ ddb::is_discdb(void)
 
     if(strncmp(schema, discdb_schema, strlen(discdb_schema)) != 0)
     {
-        cerr << "Database has wrong schema!" << endl
-             << endl;
+        if(verbosity >= 1)
+        {
+            cerr << "Database has wrong schema!" << endl
+                 << endl;
+        }
 
         sqlite3_finalize(stmt);
         return false;
@@ -238,9 +244,12 @@ ddb::is_discdb(void)
 
     if(result != SQLITE_DONE)
     {
-        cerr << "Something wrong with the database: "
-             << sqlite3_errmsg(db) << endl
-             << endl;
+        if(verbosity >= 1)
+        {
+            cerr << "Something wrong with the database: "
+                 << sqlite3_errmsg(db) << endl
+                 << endl;
+        }
 
         sqlite3_finalize(stmt);
         return false;
