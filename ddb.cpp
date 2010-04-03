@@ -471,6 +471,7 @@ ddb::list_files(void)
             // Store results
             string path;
             path.append((const char*) sqlite3_column_text(stmt, 0));
+            path.append("/");
             path.append((const char*) sqlite3_column_text(stmt, 1));
             files.push_back(path);
         }
