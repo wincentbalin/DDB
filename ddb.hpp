@@ -38,7 +38,7 @@ public:
     // Constants
     const static char* discdb_schema;
 private:
-    inline bool is_discdb(void);
+    bool is_discdb(void);
     inline bool add_disc(void);
     inline bool remove_disc(void);
     inline bool list_contents(void);
