@@ -28,7 +28,7 @@ using namespace std;
 
 
 ddb::ddb(int argc, char** argv) :
-    db_filename("discdb"), do_initialize(false),
+    db_filename(DATABASE_NAME), do_initialize(false),
     do_add(false), do_list(false), do_remove(false),
     directories_only(false), verbosity(0)
 {

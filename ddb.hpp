@@ -24,6 +24,9 @@
 
 using namespace std;
 
+// Name of the database
+#define DATABASE_NAME "discdb"
+
 // Name of the table
 #define TABLE_NAME "ddb"
 
