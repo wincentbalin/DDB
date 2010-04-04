@@ -97,6 +97,10 @@ ddb::ddb(int argc, char** argv) :
             // List
             case 'l':
                 do_list = true;
+                if(optarg)
+                {
+                    argument = optarg;
+                }
                 break;
 
             // Quite
