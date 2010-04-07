@@ -796,12 +796,12 @@ ddb::search_text(void)
             // Store results
             string disc;
             disc.append((const char*) sqlite3_column_text(stmt, 0));
-            string path;
-            path.append((const char*) sqlite3_column_text(stmt, 1));
-            path.append("/");
-            path.append((const char*) sqlite3_column_text(stmt, 2));
+            string absolute_path;
+            absolute_path.append((const char*) sqlite3_column_text(stmt, 1));
+            absolute_path.push_back('/');
+            absolute_path.append((const char*) sqlite3_column_text(stmt, 2));
 
-            files.push_back(make_pair(disc, path));
+            files.push_back(make_pair(disc, absolute_path));
         }
         else    // End or error
         {
