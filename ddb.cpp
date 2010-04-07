@@ -70,6 +70,7 @@ ddb::ddb(int argc, char** argv) :
         {
             // Add disc
             case 'a':
+                do_add = true;
                 disc_name = optarg;
                 break;
 
