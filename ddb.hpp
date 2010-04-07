@@ -43,6 +43,7 @@ public:
 private:
     bool is_discdb(void);
     bool is_disc_present(string& name);
+    bool is_directory(string& filename);
     inline bool add_disc(void);
     inline bool remove_disc(void);
     inline bool list_contents(void);

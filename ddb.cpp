@@ -23,6 +23,10 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <cctype>
+
+#include <dirent.h>
+#include <sys/stat.h>
 
 #include <getopt.h>
 
@@ -314,9 +318,216 @@ ddb::is_disc_present(string& name)
 }
 
 bool
+ddb::is_directory(string& filename)
+{
+    struct stat dir_stat;
+
+    stat(filename.c_str(), &dir_stat);
+    return (S_ISDIR(dir_stat.st_mode)) ? true : false;   // ugly hack
+}
+
+bool
 ddb::add_disc(void)
 {
-    return false;
+    const char* begin_transaction = "BEGIN";
+    const char* add_entry =
+        "INSERT INTO ddb (directory, file, disc) VALUES (?, ?, ?)";
+    const char* end_transaction = "COMMIT";
+
+    int result;
+    char* error_message = NULL;
+
+    // Check whether the given argument is a directory
+    if(! is_directory(argument))
+    {
+        cerr << argument << " is not a directory!" << endl << endl;
+        return false;
+    }
+
+    // Collect file names
+    vector<pair<string, string> > filenames;
+    string directory_filename = "";
+    string current_directory = argument;
+    string current_file;
+    string current_absolute_path;
+    stack <pair<string, DIR*> > directory_stack;
+    struct dirent* entry;
+
+    // Open the directory
+open_directory:
+    DIR* dir = opendir(current_directory.c_str());
+
+    if(dir == NULL)
+    {
+        cerr << "Error opening directory " << argument << " !" << endl << endl;
+        return false;
+    }
+
+    // Add directory to the filenames
+    filenames.push_back(make_pair(current_directory, directory_filename));
+
+    while(true)
+    {
+        entry = readdir(dir);
+
+        // Check whether the directory ended
+        if(entry == NULL)
+        {
+            // Close directory
+            closedir(dir);
+
+            // If stack is not empty, pop parent directory from it
+            if(! directory_stack.empty())
+            {
+                pair<string, DIR*> directory_pair = directory_stack.top();
+                directory_stack.pop();
+
+                current_directory = directory_pair.first;
+                dir = directory_pair.second;
+
+                // Go to reading of the next entry of the directory
+                continue;
+            }
+            else // End searching files
+            {
+                break;
+            }
+        }
+
+        current_file = entry->d_name;
+
+        // Do not process relative directories
+        if(current_file.compare(".") == 0 || current_file.compare("..") == 0)
+        {
+            continue;
+        }
+
+        current_absolute_path = current_directory + "/" + current_file;
+
+        // If current file is a directory, push the current one on the stack,
+        // make current file to the current directory and open it
+        if(is_directory(current_absolute_path))
+        {
+            directory_stack.push(make_pair(current_directory, dir));
+            current_directory = current_absolute_path;
+            goto open_directory;
+        }
+
+        // Add filename
+        filenames.push_back(make_pair(current_directory, current_file));
+    }
+
+    // Sort filenames
+    sort(filenames.begin(),filenames.end());
+
+    if(verbosity >= 4)
+    {
+        vector<pair<string, string> >::const_iterator it;
+        for(it = filenames.begin(); it != filenames.end(); it++)
+        {
+            cout << "Directory " << it->first << " Entry " << it->second << endl;
+        }
+    }
+
+    // Begin SQL transaction
+    msg(2, "Inserting files into the database...");
+    result =
+    sqlite3_exec(db, begin_transaction, NULL, NULL, &error_message);
+
+    if(result != SQLITE_OK)
+    {
+        if(verbosity >= 3)
+        {
+            cerr << "Error while beginning add transaction: " << error_message
+                 << endl
+                 << endl;
+        }
+
+        sqlite3_free(error_message);
+
+        return false;
+    }
+    // Prepare SQL statement
+    sqlite3_stmt* stmt;
+
+    sqlite3_prepare_v2(db, add_entry, -1, &stmt, NULL);
+
+    // Bind disc name
+    sqlite3_bind_text(stmt, 3, disc_name.c_str(), -1, SQLITE_STATIC);
+
+    //Add files
+    const char* d_entry;
+    const char* f_entry;
+    const char* f_entry_directory = "NULL";
+
+    vector<pair<string, string> >::const_iterator i;
+    for(i = filenames.begin(); i != filenames.end(); i++)
+    {
+        d_entry = i->first.c_str();
+        f_entry = i->second.c_str();
+
+        // If needed, UNIXify directory
+        if(isalpha(d_entry[0]) && d_entry[1] == ':')
+        {
+            d_entry += 2;
+        }
+
+        // If entry is a directory, replace file with NULL
+        if(strlen(f_entry) == 0)
+        {
+            f_entry = f_entry_directory;
+        }
+
+        // Reset SQL statement
+        sqlite3_reset(stmt);
+
+        // Bind directory and file
+        sqlite3_bind_text(stmt, 1, d_entry, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, f_entry, -1, SQLITE_TRANSIENT);
+
+        // Execute SQL statement
+        result =
+        sqlite3_step(stmt);
+
+        // Check for errors
+        if(result != SQLITE_DONE)
+        {
+cerr << "Error code: " << result << endl;
+            sqlite3_finalize(stmt);
+
+            if(verbosity >= 3)
+            {
+                cerr << "Error while add transaction!" << endl
+                     << endl;
+            }
+
+            return false;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+
+
+    // End SQL transaction
+    result =
+    sqlite3_exec(db, end_transaction, NULL, NULL, &error_message);
+
+    if(result != SQLITE_OK)
+    {
+        if(verbosity >= 3)
+        {
+            cerr << "Error while ending add transaction: " << error_message
+                 << endl
+                 << endl;
+        }
+
+        sqlite3_free(error_message);
+
+        return false;
+    }
+    msg(3, "Done.");
+
+    return true;
 }
 
 bool
