@@ -548,7 +548,60 @@ open_directory:
 bool
 ddb::remove_disc(void)
 {
-    return false;
+    const char* remove_query = "DELETE FROM ddb WHERE disc=?";
+
+    // Check whether the disc is in the database
+    if(! is_disc_present(disc_name))
+    {
+        cerr << "Disc " << disc_name << " is not in the database!" << endl;
+        return false;
+    }
+
+    // Ask user for confirmation
+    char c;
+    cout << "Remove disc " << disc_name << " from database? (y/n): ";
+    cin >> c;
+
+    if(c == 'y')
+    {
+        msg(2, "Removing of the disc confirmed.");
+    }
+    else
+    {
+        msg(2, "Removing of the disc canceled.");
+        return true;
+    }
+
+    // Initialize and prepare SQL statement
+    int result;
+    sqlite3_stmt* stmt;
+
+    sqlite3_prepare_v2(db, remove_query, -1, &stmt, NULL);
+
+    sqlite3_bind_text(stmt, 1, disc_name.c_str(), -1, SQLITE_STATIC);
+
+    // Execute SQL statement
+    result =
+    sqlite3_step(stmt);
+
+    // Check for errors
+    if(result != SQLITE_DONE)
+    {
+        sqlite3_finalize(stmt);
+
+        if(verbosity >= 3)
+        {
+            cerr << "Error removing disc!" << endl
+                 << endl;
+        }
+
+        return false;
+    }
+
+    // Clean up
+    sqlite3_finalize(stmt);
+
+    return true;
 }
 
 bool
