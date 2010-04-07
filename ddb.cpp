@@ -730,9 +730,11 @@ ddb::list_files(void)
 bool
 ddb::initialize_database(void)
 {
+    char* error_message = NULL;
+
     // Create the table
     int result =
-    sqlite3_exec(db, discdb_schema, NULL, NULL, NULL);
+    sqlite3_exec(db, discdb_schema, NULL, NULL, &error_message);
 
     if(result != SQLITE_OK)
     {
@@ -741,6 +743,8 @@ ddb::initialize_database(void)
             cerr << "Error creating table!" << endl
                  << endl;
         }
+
+        sqlite3_free(error_message);
 
         return false;
     }
