@@ -18,8 +18,6 @@
 #define DDB_HPP
 
 #include <string>
-#include <vector>
-#include <algorithm>
 
 #include <sqlite3.h>
 
