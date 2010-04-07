@@ -1,0 +1,56 @@
+                            Disc DataBase
+
+                            Wincent Balin
+
+                       wincent.balin@gmail.com
+
+                     ----------------------------
+
+DDB (short for Disc DataBase) is a manager for removable media.
+It was conceived as a relatively simple Perl script and was remade
+in C++, as I did not want to install ActivePerl on every new Win* machine.
+As with the original ddb.pl script, the program uses SQLite3.
+
+DDB has command line interface. The list of it's command line switches
+can be obtained either by calling it with the '-h'switch or without
+any switches.
+
+Compiling
+---------
+
+Currently the program compiles on Win* platform with MinGW compiler.
+Linux users might want to check whether DDB compiles under Linux
+(or any other UNIX) too.
+
+Prerequisites:
+
+0. Cygwin with MinGW compiler
+
+Steps:
+
+1. Get SQLite3 amalgamation and unpack it into the directory
+   with DDB sources and compile it
+
+2. If needed, choose MinGW compiler as the default one with
+
+       /usr/sbin/alternatives --config gcc
+
+3. Copy sqlite3.o object file into the directory with DDB sources
+
+4. Start compilation with
+
+      make
+
+And voila, you have the executable. Run it with
+
+      ./ddb -h
+
+to get acquainted with possible options.
+
+
+TODO
+----
+
+* Check whether DDB is usable under (at least) Linux and Mac OS X too
+
+
