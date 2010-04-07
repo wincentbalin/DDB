@@ -508,7 +508,6 @@ open_directory:
         // Check for errors
         if(result != SQLITE_DONE)
         {
-cerr << "Error code: " << result << endl;
             sqlite3_finalize(stmt);
 
             if(verbosity >= 3)
