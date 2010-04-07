@@ -343,6 +343,16 @@ ddb::add_disc(void)
     int result;
     char* error_message = NULL;
 
+    // Check whether the disc is already in the database
+    if(is_disc_present(disc_name))
+    {
+        cerr << "Disc " << disc_name << " already present in the database!"
+             << endl
+             << endl;
+
+        return false;
+    }
+
     // Check whether the given argument is a directory
     if(! is_directory(argument))
     {
