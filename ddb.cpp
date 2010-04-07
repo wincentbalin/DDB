@@ -830,7 +830,7 @@ ddb::search_text(void)
     vector<pair<string, string> >::const_iterator i;
     for(i = files.begin(); i != files.end(); i++)
     {
-        cout << (*i).first << ":\t" << (*i).second << endl;
+        cout << i->first << ":\t" << i->second << endl;
     }
 
     return true;
