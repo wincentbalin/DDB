@@ -179,7 +179,7 @@ ddb::run(void)
         success =
         add_disc();
 
-        if(!success)
+        if(!success && verbosity >= 1)
         {
             cerr << "Error while adding disc " << disc_name << endl;
         }
@@ -189,7 +189,7 @@ ddb::run(void)
         success =
         remove_disc();
 
-        if(!success)
+        if(!success && verbosity >= 1)
         {
             cerr << "Error while removing disc " << disc_name << endl;
         }
@@ -199,7 +199,7 @@ ddb::run(void)
         success =
         list_contents();
 
-        if(!success)
+        if(!success && verbosity >= 1)
         {
             cerr << "Error while listing contents" << endl;
         }
@@ -209,14 +209,20 @@ ddb::run(void)
         success =
         initialize_database();
 
-        if(!success)
+        if(!success && verbosity >= 1)
         {
             cerr << "Error initializing database" << endl;
         }
     }
     else    // If nothing else specified, search text
     {
+        success =
         search_text();
+
+        if(!success && verbosity >= 1)
+        {
+            cerr << "Error searching" << endl;
+        }
     }
 
     // Close database
