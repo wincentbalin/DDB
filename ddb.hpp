@@ -32,11 +32,11 @@ using namespace std;
 
 
 
-class ddb
+class DDB
 {
 public:
-    ddb(int argc, char** argv);
-    ~ddb(void);
+    DDB(int argc, char** argv);
+    ~DDB(void);
     bool run(void);
     // Constants
     const static char* discdb_schema;
@@ -70,7 +70,7 @@ private:
 
 
 // discdb schema
-const char* ddb::discdb_schema =
+const char* DDB::discdb_schema =
     "CREATE TABLE "TABLE_NAME" "
     "(directory TEXT NOT NULL, file TEXT, disc TEXT NOT NULL)";
 

@@ -34,7 +34,7 @@
 using namespace std;
 
 
-ddb::ddb(int argc, char** argv) :
+DDB::DDB(int argc, char** argv) :
     db_filename(DATABASE_NAME), do_initialize(false),
     do_add(false), do_list(false), do_remove(false),
     directories_only(false), verbosity(0)
@@ -142,12 +142,12 @@ ddb::ddb(int argc, char** argv) :
     }
 }
 
-ddb::~ddb(void)
+DDB::~DDB(void)
 {
 }
 
 bool
-ddb::run(void)
+DDB::run(void)
 {
     int result;
     bool success = true;
@@ -234,7 +234,7 @@ ddb::run(void)
 }
 
 bool
-ddb::is_discdb(void)
+DDB::is_discdb(void)
 {
     const char* check_discdb_table =
         "SELECT sql FROM "
@@ -298,7 +298,7 @@ ddb::is_discdb(void)
 }
 
 bool
-ddb::is_disc_present(string& name)
+DDB::is_disc_present(string& name)
 {
     const char* disc_present =
         "SELECT DISTINCT disc FROM ddb WHERE disc LIKE ?";
@@ -324,7 +324,7 @@ ddb::is_disc_present(string& name)
 }
 
 bool
-ddb::is_directory(string& filename)
+DDB::is_directory(string& filename)
 {
     struct stat dir_stat;
 
@@ -333,7 +333,7 @@ ddb::is_directory(string& filename)
 }
 
 bool
-ddb::add_disc(void)
+DDB::add_disc(void)
 {
     const char* begin_transaction = "BEGIN";
     const char* add_entry =
@@ -546,7 +546,7 @@ open_directory:
 }
 
 bool
-ddb::remove_disc(void)
+DDB::remove_disc(void)
 {
     const char* remove_query = "DELETE FROM ddb WHERE disc=?";
 
@@ -605,7 +605,7 @@ ddb::remove_disc(void)
 }
 
 bool
-ddb::list_contents(void)
+DDB::list_contents(void)
 {
     if(directories_only)
     {
@@ -622,7 +622,7 @@ ddb::list_contents(void)
 }
 
 bool
-ddb::list_discs(void)
+DDB::list_discs(void)
 {
     const char* list_discs = "SELECT DISTINCT disc FROM ddb";
     int result;
@@ -677,7 +677,7 @@ ddb::list_discs(void)
 }
 
 bool
-ddb::list_directories(void)
+DDB::list_directories(void)
 {
     const char* list_dirs =
         "SELECT DISTINCT directory FROM ddb WHERE disc LIKE ?";
@@ -735,7 +735,7 @@ ddb::list_directories(void)
 }
 
 bool
-ddb::list_files(void)
+DDB::list_files(void)
 {
     const char* list_files =
         "SELECT directory,file FROM ddb WHERE disc LIKE ?";
@@ -796,7 +796,7 @@ ddb::list_files(void)
 }
 
 bool
-ddb::initialize_database(void)
+DDB::initialize_database(void)
 {
     char* error_message = NULL;
 
@@ -833,7 +833,7 @@ ddb::initialize_database(void)
 }
 
 bool
-ddb::search_text(void)
+DDB::search_text(void)
 {
     const char* search = directories_only ?
         "SELECT disc,directory,file FROM ddb WHERE directory LIKE ?" :
@@ -905,7 +905,7 @@ ddb::search_text(void)
 }
 
 void
-ddb::print_help(void)
+DDB::print_help(void)
 {
     cerr << "Disc Data Base" << endl
          << endl
@@ -925,7 +925,7 @@ ddb::print_help(void)
 }
 
 void
-ddb::msg(int min_verbosity, char* message)
+DDB::msg(int min_verbosity, char* message)
 {
     if(verbosity >= min_verbosity)
     {
@@ -936,7 +936,7 @@ ddb::msg(int min_verbosity, char* message)
 
 int main(int argc, char** argv)
 {
-    ddb ddb(argc, argv);
+    DDB ddb(argc, argv);
 
     return ddb.run() ? EXIT_SUCCESS : EXIT_FAILURE;
 }
