@@ -1,4 +1,6 @@
-/** ddb.hpp 
+/**
+    ddb.hpp 
+
     Main include file.
 
     Part of Disc Data Base.
