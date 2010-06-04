@@ -1,6 +1,4 @@
-/**
-    ddb.hpp
-
+/** ddb.hpp 
     Main include file.
 
     Part of Disc Data Base.
@@ -53,7 +51,7 @@ private:
     inline bool initialize_database(void);
     inline bool search_text(void);
     void print_help(void);
-    void msg(int min_verbosity, char* message);
+    void msg(int min_verbosity, const char* message);
     // Database handle
     sqlite3* db;
     // Configuration flags

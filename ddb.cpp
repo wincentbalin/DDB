@@ -925,7 +925,7 @@ DDB::print_help(void)
 }
 
 void
-DDB::msg(int min_verbosity, char* message)
+DDB::msg(int min_verbosity, const char* message)
 {
     if(verbosity >= min_verbosity)
     {
