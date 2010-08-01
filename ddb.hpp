@@ -17,6 +17,7 @@
 #ifndef DDB_HPP
 #define DDB_HPP
 
+#include <exception>
 #include <string>
 
 #include <sqlite3.h>
@@ -31,6 +32,19 @@ using namespace std;
 #define TABLE_NAME "ddb"
 
 
+class Exception : public std::exception
+{
+public:
+    Exception() {}
+    Exception(const char* cause) : msg(cause) {}
+    Exception(const std::string& s) : msg(s.c_str()) {}
+    virtual ~Exception() throw () {}
+    virtual const char* what() const throw () { return msg; }
+    virtual Exception& operator=(const char* cause) { msg = cause; return *this; }
+    virtual Exception& operator=(std::string& s) { msg = s.c_str(); return *this; }
+protected:
+    const char* msg;
+};
 
 class DDB
 {
