@@ -60,6 +60,12 @@ inline bool operator ==(const char* s1, std::string& s2)
     return s2.compare(s1) == EQUAL;
 }
 
+enum text_distance
+{
+    NEXT_LINE = 1,
+    NEXT_PARAGRAPH = 2
+};
+
 class DDB
 {
 public:
@@ -81,8 +87,8 @@ private:
     inline bool initialize_database(void);
     inline bool search_text(void);
     static void print_help(void);
-    void msg(int min_verbosity, const char* message, unsigned  int newlines = 1);
-    void msg(int min_verbosity, const std::string& message, unsigned  int newlines = 1);
+    void msg(int min_verbosity, const char* message, enum text_distance = NEXT_LINE);
+    void msg(int min_verbosity, const std::string& message, enum text_distance = NEXT_LINE);
     // Database handle
     sqlite3* db;
     // Configuration flags

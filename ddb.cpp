@@ -253,7 +253,7 @@ DDB::is_discdb(void)
     {
         std::string err_msg = "Error checking database: ";
                     err_msg += sqlite3_errmsg(db);
-        msg(1, err_msg, 2);
+        msg(1, err_msg, NEXT_PARAGRAPH);
 
         sqlite3_finalize(stmt);
         return false;
@@ -263,7 +263,7 @@ DDB::is_discdb(void)
 
     if(strncmp(schema, discdb_schema, strlen(discdb_schema)) != 0)
     {
-        msg(1, "Database has wrong schema!", 2);
+        msg(1, "Database has wrong schema!", NEXT_PARAGRAPH);
 
         sqlite3_finalize(stmt);
         return false;
@@ -276,7 +276,7 @@ DDB::is_discdb(void)
     {
         std::string err_msg = "Something wrong with the database: ";
                     err_msg += sqlite3_errmsg(db);
-        msg(1, err_msg, 2);
+        msg(1, err_msg, NEXT_PARAGRAPH);
 
         sqlite3_finalize(stmt);
         return false;
@@ -336,7 +336,7 @@ DDB::add_disc(void)
     if(is_disc_present(disc_name))
     {
         std::string err_msg = "Disc " + disc_name + " already present in the database!";
-        msg(0, err_msg, 2);
+        msg(0, err_msg, NEXT_PARAGRAPH);
 
         return false;
     }
@@ -345,7 +345,7 @@ DDB::add_disc(void)
     if(! is_directory(argument))
     {
         std::string err_msg = argument + " is not a directory!";
-        msg(0, err_msg, 2);
+        msg(0, err_msg, NEXT_PARAGRAPH);
 
         return false;
     }
@@ -366,7 +366,7 @@ open_directory:
     if(dir == NULL)
     {
         std::string err_msg = "Error opening directory " + argument + " !";
-        msg(0, err_msg, 2);
+        msg(0, err_msg, NEXT_PARAGRAPH);
         return false;
     }
 
@@ -445,7 +445,7 @@ open_directory:
     {
         std::string err_msg = "Error while beginning add transaction: ";
                     err_msg += error_message;
-        msg(3, err_msg, 2);
+        msg(3, err_msg, NEXT_PARAGRAPH);
 
         sqlite3_free(error_message);
 
@@ -498,7 +498,7 @@ open_directory:
         {
             sqlite3_finalize(stmt);
 
-            msg(3, "Error while add transaction!", 2);
+            msg(3, "Error while add transaction!", NEXT_PARAGRAPH);
 
             return false;
         }
@@ -515,7 +515,7 @@ open_directory:
     {
         std::string err_msg = "Error while ending add transaction: ";
                     err_msg += error_message;
-        msg(3, err_msg, 2);
+        msg(3, err_msg, NEXT_PARAGRAPH);
 
         sqlite3_free(error_message);
 
@@ -535,7 +535,7 @@ DDB::remove_disc(void)
     if(! is_disc_present(disc_name))
     {
         std::string err_msg = "Disc " + disc_name + " is not in the database!";
-        msg(0, err_msg, 2);
+        msg(0, err_msg, NEXT_PARAGRAPH);
 
         return false;
     }
@@ -572,7 +572,7 @@ DDB::remove_disc(void)
     {
         sqlite3_finalize(stmt);
 
-        msg(3, "Error removing disc!", 2);
+        msg(3, "Error removing disc!", NEXT_PARAGRAPH);
 
         return false;
     }
@@ -632,7 +632,7 @@ DDB::list_discs(void)
             }
             else
             {
-                msg(1, "Error while listing contents!", 2);
+                msg(1, "Error while listing contents!", NEXT_PARAGRAPH);
 
                 return false;
             }
@@ -686,7 +686,7 @@ DDB::list_directories(void)
             }
             else
             {
-                msg(1, "Error while listing contents!", 2);
+                msg(1, "Error while listing contents!", NEXT_PARAGRAPH);
 
                 return false;
             }
@@ -743,7 +743,7 @@ DDB::list_files(void)
             }
             else
             {
-                msg(1, "Error while listing contents!", 2);
+                msg(1, "Error while listing contents!", NEXT_PARAGRAPH);
 
                 return false;
             }
@@ -773,7 +773,7 @@ DDB::initialize_database(void)
 
     if(result != SQLITE_OK)
     {
-        msg(1, "Error creating table!", 2);
+        msg(1, "Error creating table!", NEXT_PARAGRAPH);
 
         sqlite3_free(error_message);
 
@@ -783,7 +783,7 @@ DDB::initialize_database(void)
     // Check the table again
     if(!is_discdb())
     {
-        msg(1, "Table was not created!", 2);
+        msg(1, "Table was not created!", NEXT_PARAGRAPH);
 
         return false;
     }
@@ -835,7 +835,7 @@ DDB::search_text(void)
             }
             else
             {
-                msg(1, "Error while listing contents!", 2);
+                msg(1, "Error while listing contents!", NEXT_PARAGRAPH);
 
                 return false;
             }
@@ -875,19 +875,19 @@ DDB::print_help(void)
 }
 
 void
-DDB::msg(int min_verbosity, const char* message, unsigned int newlines)
+DDB::msg(int min_verbosity, const char* message, enum text_distance newlines)
 {
     if(verbosity >= min_verbosity)
     {
         std::cerr << message;
 
-        for(unsigned int i = 0; i < newlines; i++)
+        for(int i = 0; i < newlines; i++)
             std::cerr << std::endl;
     }
 }
 
 void
-DDB::msg(int min_verbosity, const std::string& message, unsigned int newlines)
+DDB::msg(int min_verbosity, const std::string& message, enum text_distance newlines)
 {
     msg(min_verbosity, message.c_str(), newlines);
 }
