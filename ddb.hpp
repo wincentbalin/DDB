@@ -60,6 +60,14 @@ inline bool operator ==(const char* s1, std::string& s2)
     return s2.compare(s1) == EQUAL;
 }
 
+enum msg_verbosity
+{
+    CRITICAL = 0,
+    INFO = 1,
+    VERBOSE = 2,
+    DEBUG = 3
+};
+
 enum text_distance
 {
     NEXT_LINE = 1,
@@ -87,8 +95,8 @@ private:
     inline bool initialize_database(void);
     inline bool search_text(void);
     static void print_help(void);
-    void msg(int min_verbosity, const char* message, enum text_distance = NEXT_LINE);
-    void msg(int min_verbosity, const std::string& message, enum text_distance = NEXT_LINE);
+    void msg(enum msg_verbosity min_verbosity, const char* message, enum text_distance = NEXT_LINE);
+    void msg(enum msg_verbosity min_verbosity, const std::string& message, enum text_distance = NEXT_LINE);
     // Database handle
     sqlite3* db;
     // Configuration flags
