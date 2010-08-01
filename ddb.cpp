@@ -146,8 +146,8 @@ DDB::~DDB(void)
 {
 }
 
-bool
-DDB::run(void)
+void
+DDB::run(void) throw (Exception)
 {
     int result;
     bool success = true;
@@ -229,8 +229,6 @@ DDB::run(void)
     msg(2, "Closing the database...");
     sqlite3_close(db);
     msg(3, "Done.");
-
-    return success;
 }
 
 bool
@@ -938,5 +936,15 @@ int main(int argc, char** argv)
 {
     DDB ddb(argc, argv);
 
-    return ddb.run() ? EXIT_SUCCESS : EXIT_FAILURE;
+    try
+    {
+        ddb.run();
+    }
+    catch(Exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }

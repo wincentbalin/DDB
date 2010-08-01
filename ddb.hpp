@@ -51,7 +51,7 @@ class DDB
 public:
     DDB(int argc, char** argv);
     ~DDB(void);
-    bool run(void);
+    void run(void) throw (Exception);
     // Constants
     const static char* discdb_schema;
 private:
