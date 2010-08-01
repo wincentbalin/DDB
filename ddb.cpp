@@ -254,11 +254,9 @@ DDB::is_discdb(void)
 
     if(result != SQLITE_ROW || sqlite3_column_count(stmt) != 1)
     {
-        if(verbosity >= 1)
-        {
-            cerr << "Error checking database: " << sqlite3_errmsg(db) << endl
-                 << endl;
-        }
+        std::string err_msg = "Error checking database: ";
+                    err_msg += sqlite3_errmsg(db);
+        msg(1, err_msg, 2);
 
         sqlite3_finalize(stmt);
         return false;
@@ -268,11 +266,7 @@ DDB::is_discdb(void)
 
     if(strncmp(schema, discdb_schema, strlen(discdb_schema)) != 0)
     {
-        if(verbosity >= 1)
-        {
-            cerr << "Database has wrong schema!" << endl
-                 << endl;
-        }
+        msg(1, "Database has wrong schema!", 2);
 
         sqlite3_finalize(stmt);
         return false;
@@ -283,12 +277,9 @@ DDB::is_discdb(void)
 
     if(result != SQLITE_DONE)
     {
-        if(verbosity >= 1)
-        {
-            cerr << "Something wrong with the database: "
-                 << sqlite3_errmsg(db) << endl
-                 << endl;
-        }
+        std::string err_msg = "Something wrong with the database: ";
+                    err_msg += sqlite3_errmsg(db);
+        msg(1, err_msg, 2);
 
         sqlite3_finalize(stmt);
         return false;
@@ -347,9 +338,8 @@ DDB::add_disc(void)
     // Check whether the disc is already in the database
     if(is_disc_present(disc_name))
     {
-        cerr << "Disc " << disc_name << " already present in the database!"
-             << endl
-             << endl;
+        std::string err_msg = "Disc " + disc_name + " already present in the database!";
+        msg(0, err_msg, 2);
 
         return false;
     }
@@ -357,7 +347,9 @@ DDB::add_disc(void)
     // Check whether the given argument is a directory
     if(! is_directory(argument))
     {
-        cerr << argument << " is not a directory!" << endl << endl;
+        std::string err_msg = argument + " is not a directory!";
+        msg(0, err_msg, 2);
+
         return false;
     }
 
@@ -376,7 +368,8 @@ open_directory:
 
     if(dir == NULL)
     {
-        cerr << "Error opening directory " << argument << " !" << endl << endl;
+        std::string err_msg = "Error opening directory " + argument + " !";
+        msg(0, err_msg, 2);
         return false;
     }
 
@@ -453,12 +446,9 @@ open_directory:
 
     if(result != SQLITE_OK)
     {
-        if(verbosity >= 3)
-        {
-            cerr << "Error while beginning add transaction: " << error_message
-                 << endl
-                 << endl;
-        }
+        std::string err_msg = "Error while beginning add transaction: ";
+                    err_msg += error_message;
+        msg(3, err_msg, 2);
 
         sqlite3_free(error_message);
 
@@ -511,11 +501,7 @@ open_directory:
         {
             sqlite3_finalize(stmt);
 
-            if(verbosity >= 3)
-            {
-                cerr << "Error while add transaction!" << endl
-                     << endl;
-            }
+            msg(3, "Error while add transaction!", 2);
 
             return false;
         }
@@ -530,12 +516,9 @@ open_directory:
 
     if(result != SQLITE_OK)
     {
-        if(verbosity >= 3)
-        {
-            cerr << "Error while ending add transaction: " << error_message
-                 << endl
-                 << endl;
-        }
+        std::string err_msg = "Error while ending add transaction: ";
+                    err_msg += error_message;
+        msg(3, err_msg, 2);
 
         sqlite3_free(error_message);
 
@@ -554,7 +537,9 @@ DDB::remove_disc(void)
     // Check whether the disc is in the database
     if(! is_disc_present(disc_name))
     {
-        cerr << "Disc " << disc_name << " is not in the database!" << endl;
+        std::string err_msg = "Disc " + disc_name + " is not in the database!";
+        msg(0, err_msg, 2);
+
         return false;
     }
 
@@ -590,11 +575,7 @@ DDB::remove_disc(void)
     {
         sqlite3_finalize(stmt);
 
-        if(verbosity >= 3)
-        {
-            cerr << "Error removing disc!" << endl
-                 << endl;
-        }
+        msg(3, "Error removing disc!", 2);
 
         return false;
     }
@@ -654,11 +635,7 @@ DDB::list_discs(void)
             }
             else
             {
-                if(verbosity >= 1)
-                {
-                    cerr << "Error while listing contents!" << endl
-                         << endl;
-                }
+                msg(1, "Error while listing contents!", 2);
 
                 return false;
             }
@@ -712,11 +689,7 @@ DDB::list_directories(void)
             }
             else
             {
-                if(verbosity >= 1)
-                {
-                    cerr << "Error while listing contents!" << endl
-                         << endl;
-                }
+                msg(1, "Error while listing contents!", 2);
 
                 return false;
             }
@@ -773,11 +746,7 @@ DDB::list_files(void)
             }
             else
             {
-                if(verbosity >= 1)
-                {
-                    cerr << "Error while listing contents!" << endl
-                         << endl;
-                }
+                msg(1, "Error while listing contents!", 2);
 
                 return false;
             }
@@ -807,11 +776,7 @@ DDB::initialize_database(void)
 
     if(result != SQLITE_OK)
     {
-        if(verbosity >= 1)
-        {
-            cerr << "Error creating table!" << endl
-                 << endl;
-        }
+        msg(1, "Error creating table!", 2);
 
         sqlite3_free(error_message);
 
@@ -821,11 +786,7 @@ DDB::initialize_database(void)
     // Check the table again
     if(!is_discdb())
     {
-        if(verbosity >= 1)
-        {
-            cerr << "Table was not created!" << endl
-                 << endl;
-        }
+        msg(1, "Table was not created!", 2);
 
         return false;
     }
@@ -882,11 +843,7 @@ DDB::search_text(void)
             }
             else
             {
-                if(verbosity >= 1)
-                {
-                    cerr << "Error while listing contents!" << endl
-                         << endl;
-                }
+                msg(1, "Error while listing contents!", 2);
 
                 return false;
             }
@@ -926,7 +883,7 @@ DDB::print_help(void)
 }
 
 void
-DDB::msg(int min_verbosity, const char* message, const unsigned int newlines = 1)
+DDB::msg(int min_verbosity, const char* message, unsigned int newlines)
 {
     if(verbosity >= min_verbosity)
     {
@@ -938,7 +895,7 @@ DDB::msg(int min_verbosity, const char* message, const unsigned int newlines = 1
 }
 
 void
-DDB::msg(int min_verbosity, const std::string& message, const unsigned int newlines = 1)
+DDB::msg(int min_verbosity, const std::string& message, unsigned int newlines)
 {
     msg(min_verbosity, message.c_str(), newlines);
 }
