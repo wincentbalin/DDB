@@ -411,7 +411,7 @@ open_directory:
         current_file = entry->d_name;
 
         // Do not process relative directories
-        if(current_file.compare(".") == 0 || current_file.compare("..") == 0)
+        if(current_file == "." || current_file == "..")
         {
             continue;
         }
