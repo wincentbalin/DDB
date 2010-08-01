@@ -160,17 +160,18 @@ DDB::run(void) throw (Exception)
 
     if(result != SQLITE_OK)
     {
-        cerr << "Error while opening database " << db_filename << " : "
-             << sqlite3_errmsg(db) << endl;
-        exit(EXIT_FAILURE);
+        std::string msg = "Error while opening database " +
+                          db_filename + " : " + sqlite3_errmsg(db);
+        throw Exception(msg);
     }
 
     // Check whether the database has table ddb
     if(!do_initialize && !is_discdb())
     {
-        cerr << "Wrong database " << db_filename << endl;
         sqlite3_close(db);
-        return false;
+
+        std::string msg = "Wrong database " + db_filename;
+        throw Exception(msg);
     }
 
     // Choose functionality to run
@@ -181,7 +182,8 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            cerr << "Error while adding disc " << disc_name << endl;
+            std::string msg = "Error while adding disc " + disc_name;
+            throw Exception(msg);
         }
     }
     else if(do_remove)
@@ -191,7 +193,8 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            cerr << "Error while removing disc " << disc_name << endl;
+            std::string msg = "Error while removing disc " + disc_name;
+            throw Exception(msg);
         }
     }
     else if(do_list)
@@ -201,7 +204,7 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            cerr << "Error while listing contents" << endl;
+            throw Exception("Error while listing contents");
         }
     }
     else if(do_initialize)
@@ -211,7 +214,7 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            cerr << "Error initializing database" << endl;
+            throw Exception("Error initializing database");
         }
     }
     else    // If nothing else specified, search text
@@ -221,7 +224,7 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            cerr << "Error searching" << endl;
+            throw Exception("Error searching");
         }
     }
 
