@@ -66,8 +66,9 @@ private:
     inline bool list_files(void);
     inline bool initialize_database(void);
     inline bool search_text(void);
-    void print_help(void);
-    void msg(int min_verbosity, const char* message);
+    static void print_help(void);
+    void msg(int min_verbosity, const char* message, const unsigned  int newlines = 1);
+    void msg(int min_verbosity, const std::string& message, const unsigned  int newlines = 1);
     // Database handle
     sqlite3* db;
     // Configuration flags

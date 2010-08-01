@@ -923,12 +923,21 @@ DDB::print_help(void)
 }
 
 void
-DDB::msg(int min_verbosity, const char* message)
+DDB::msg(int min_verbosity, const char* message, const unsigned int newlines = 1)
 {
     if(verbosity >= min_verbosity)
     {
-        cerr << message << endl;
+        std::cerr << message;
+
+        for(unsigned int i = 0; i < newlines; i++)
+            std::cerr << std::endl;
     }
+}
+
+void
+DDB::msg(int min_verbosity, const std::string& message, const unsigned int newlines = 1)
+{
+    msg(min_verbosity, message.c_str(), newlines);
 }
 
 
