@@ -1,5 +1,5 @@
 /**
-    ddb.hpp 
+    ddb.hpp
 
     Main include file.
 
