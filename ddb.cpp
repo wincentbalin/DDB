@@ -31,9 +31,6 @@
 #include <getopt.h>
 
 
-using namespace std;
-
-
 DDB::DDB(int argc, char** argv) :
     db_filename(DATABASE_NAME), do_initialize(false),
     do_add(false), do_list(false), do_remove(false),
@@ -290,7 +287,7 @@ DDB::is_discdb(void)
 }
 
 bool
-DDB::is_disc_present(string& name)
+DDB::is_disc_present(std::string& name)
 {
     const char* disc_present =
         "SELECT DISTINCT disc FROM ddb WHERE disc LIKE ?";
@@ -316,7 +313,7 @@ DDB::is_disc_present(string& name)
 }
 
 bool
-DDB::is_directory(string& filename)
+DDB::is_directory(std::string& filename)
 {
     struct stat dir_stat;
 
@@ -354,12 +351,12 @@ DDB::add_disc(void)
     }
 
     // Collect file names
-    vector<pair<string, string> > filenames;
-    string directory_filename = "";
-    string current_directory = argument;
-    string current_file;
-    string current_absolute_path;
-    stack <pair<string, DIR*> > directory_stack;
+    std::vector<std::pair<std::string, std::string> > filenames;
+    std::string directory_filename = "";
+    std::string current_directory = argument;
+    std::string current_file;
+    std::string current_absolute_path;
+    std::stack <std::pair<std::string, DIR*> > directory_stack;
     struct dirent* entry;
 
     // Open the directory
@@ -389,7 +386,7 @@ open_directory:
             // If stack is not empty, pop parent directory from it
             if(! directory_stack.empty())
             {
-                pair<string, DIR*> directory_pair = directory_stack.top();
+                std::pair<std::string, DIR*> directory_pair = directory_stack.top();
                 directory_stack.pop();
 
                 current_directory = directory_pair.first;
@@ -432,10 +429,10 @@ open_directory:
 
     if(verbosity >= 4)
     {
-        vector<pair<string, string> >::const_iterator it;
+        std::vector<std::pair<std::string, std::string> >::const_iterator it;
         for(it = filenames.begin(); it != filenames.end(); it++)
         {
-            cout << "Directory " << it->first << " Entry " << it->second << endl;
+            std::cout << "Directory " << it->first << " Entry " << it->second << std::endl;
         }
     }
 
@@ -467,7 +464,7 @@ open_directory:
     const char* f_entry;
     const char* f_entry_directory = "NULL";
 
-    vector<pair<string, string> >::const_iterator i;
+    std::vector<std::pair<std::string, std::string> >::const_iterator i;
     for(i = filenames.begin(); i != filenames.end(); i++)
     {
         d_entry = i->first.c_str();
@@ -545,8 +542,8 @@ DDB::remove_disc(void)
 
     // Ask user for confirmation
     char c;
-    cout << "Remove disc " << disc_name << " from database? (y/n): ";
-    cin >> c;
+    std::cout << "Remove disc " << disc_name << " from database? (y/n): ";
+    std::cin >> c;
 
     if(c == 'y')
     {
@@ -609,7 +606,7 @@ DDB::list_discs(void)
     const char* list_discs = "SELECT DISTINCT disc FROM ddb";
     int result;
     sqlite3_stmt* stmt;
-    vector<string> discs;
+    std::vector<std::string> discs;
 
     sqlite3_prepare_v2(db, list_discs, -1, &stmt, NULL);
 
@@ -622,7 +619,7 @@ DDB::list_discs(void)
         if(result == SQLITE_ROW)
         {
             // Store results
-            string s = (const char*) sqlite3_column_text(stmt, 0);
+            std::string s = (const char*) sqlite3_column_text(stmt, 0);
             discs.push_back(s);
         }
         else    // End or error
@@ -645,10 +642,10 @@ DDB::list_discs(void)
     // Sort and print results
     sort(discs.begin(), discs.end());
 
-    vector<string>::const_iterator i;
+    std::vector<std::string>::const_iterator i;
     for(i = discs.begin(); i != discs.end(); i++)
     {
-        cout << *i << endl;
+        std::cout << *i << std::endl;
     }
 
     return true;
@@ -661,7 +658,7 @@ DDB::list_directories(void)
         "SELECT DISTINCT directory FROM ddb WHERE disc LIKE ?";
     int result;
     sqlite3_stmt* stmt;
-    vector<string> directories;
+    std::vector<std::string> directories;
 
     sqlite3_prepare_v2(db, list_dirs, -1, &stmt, NULL);
 
@@ -676,7 +673,7 @@ DDB::list_directories(void)
         if(result == SQLITE_ROW)
         {
             // Store results
-            string s = (const char*) sqlite3_column_text(stmt, 0);
+            std::string s = (const char*) sqlite3_column_text(stmt, 0);
             directories.push_back(s);
         }
         else    // End or error
@@ -699,10 +696,10 @@ DDB::list_directories(void)
     // Sort and print results
     sort(directories.begin(), directories.end());
 
-    vector<string>::const_iterator i;
+    std::vector<std::string>::const_iterator i;
     for(i = directories.begin(); i != directories.end(); i++)
     {
-        cout << *i << endl;
+        std::cout << *i << std::endl;
     }
 
     return true;
@@ -715,7 +712,7 @@ DDB::list_files(void)
         "SELECT directory,file FROM ddb WHERE disc LIKE ?";
     int result;
     sqlite3_stmt* stmt;
-    vector<string> files;
+    std::vector<std::string> files;
 
     sqlite3_prepare_v2(db, list_files, -1, &stmt, NULL);
 
@@ -730,7 +727,7 @@ DDB::list_files(void)
         if(result == SQLITE_ROW)
         {
             // Store results
-            string path;
+            std::string path;
             path.append((const char*) sqlite3_column_text(stmt, 0));
             path.append("/");
             path.append((const char*) sqlite3_column_text(stmt, 1));
@@ -756,10 +753,10 @@ DDB::list_files(void)
     // Sort and print results
     sort(files.begin(), files.end());
 
-    vector<string>::const_iterator i;
+    std::vector<std::string>::const_iterator i;
     for(i = files.begin(); i != files.end(); i++)
     {
-        cout << *i << endl;
+        std::cout << *i << std::endl;
     }
 
     return true;
@@ -802,15 +799,12 @@ DDB::search_text(void)
         "SELECT disc,directory,file FROM ddb WHERE file LIKE ?";
     int result;
     sqlite3_stmt* stmt;
-    vector<pair<string, string> > files;
+    std::vector<std::pair<std::string, std::string> > files;
 
     sqlite3_prepare_v2(db, search, -1, &stmt, NULL);
 
     // Create query with wildcards
-    string wildcard;
-    wildcard.append("%");
-    wildcard.append(argument);
-    wildcard.append("%");
+    std::string wildcard = "%" + argument + "%";
 
     // Bind the query
     sqlite3_bind_text(stmt, 1, wildcard.c_str(), -1, SQLITE_STATIC);
@@ -824,12 +818,10 @@ DDB::search_text(void)
         if(result == SQLITE_ROW)
         {
             // Store results
-            string disc;
-            disc.append((const char*) sqlite3_column_text(stmt, 0));
-            string absolute_path;
-            absolute_path.append((const char*) sqlite3_column_text(stmt, 1));
-            absolute_path.push_back('/');
-            absolute_path.append((const char*) sqlite3_column_text(stmt, 2));
+            std::string disc = (const char*) sqlite3_column_text(stmt, 0);
+            std::string absolute_path = (const char*) sqlite3_column_text(stmt, 1);
+                        absolute_path.push_back('/');
+                        absolute_path.append((const char*) sqlite3_column_text(stmt, 2));
 
             files.push_back(make_pair(disc, absolute_path));
         }
@@ -853,10 +845,10 @@ DDB::search_text(void)
     // Sort and print results
     sort(files.begin(), files.end());
 
-    vector<pair<string, string> >::const_iterator i;
+    std::vector<std::pair<std::string, std::string> >::const_iterator i;
     for(i = files.begin(); i != files.end(); i++)
     {
-        cout << i->first << ":\t" << i->second << endl;
+        std::cout << i->first << ":\t" << i->second << std::endl;
     }
 
     return true;
@@ -865,21 +857,21 @@ DDB::search_text(void)
 void
 DDB::print_help(void)
 {
-    cerr << "Disc Data Base" << endl
-         << endl
-         << "ddb [options] [file ...]" << endl
-         << endl
-         << "  Options:" << endl
-         << "  No options                        Search file(s)" << endl
-         << "  -a, --add title disc_directory    Add disc to the database" << endl
-         << "  -d, --directory                   Directories only" << endl
-         << "  -r, --remove title                Remove disc from database" << endl
-         << "  -l, --list                        List the given disc or directory" << endl
-         << "  -h, --help                        Print this help message" << endl
-         << "  -v, --verbose                     Increase verbosity" << endl
-         << "  -q, --quiet                       Decrease verbosity" << endl
-         << "  -f, --file                        Use another database file" << endl
-         << "  -i, --initialize                  Create new database" << endl;
+    std::cerr << "Disc Data Base" << std::endl
+              << std::endl
+              << "ddb [options] [file ...]" << std::endl
+              << std::endl
+              << "  Options:" << std::endl
+              << "  No options                        Search file(s)" << std::endl
+              << "  -a, --add title disc_directory    Add disc to the database" << std::endl
+              << "  -d, --directory                   Directories only" << std::endl
+              << "  -r, --remove title                Remove disc from database" << std::endl
+              << "  -l, --list                        List the given disc or directory" << std::endl
+              << "  -h, --help                        Print this help message" << std::endl
+              << "  -v, --verbose                     Increase verbosity" << std::endl
+              << "  -q, --quiet                       Decrease verbosity" << std::endl
+              << "  -f, --file                        Use another database file" << std::endl
+              << "  -i, --initialize                  Create new database" << std::endl;
 }
 
 void

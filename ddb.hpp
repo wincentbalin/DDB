@@ -23,8 +23,6 @@
 #include <sqlite3.h>
 
 
-using namespace std;
-
 // Name of the database
 #define DATABASE_NAME "discdb"
 
@@ -72,8 +70,8 @@ public:
     const static char* discdb_schema;
 private:
     bool is_discdb(void);
-    bool is_disc_present(string& name);
-    bool is_directory(string& filename);
+    bool is_disc_present(std::string& name);
+    bool is_directory(std::string& filename);
     inline bool add_disc(void);
     inline bool remove_disc(void);
     inline bool list_contents(void);
@@ -88,9 +86,9 @@ private:
     // Database handle
     sqlite3* db;
     // Configuration flags
-    string db_filename;
-    string disc_name;
-    string argument;
+    std::string db_filename;
+    std::string disc_name;
+    std::string argument;
     bool do_initialize;
     bool do_add;
     bool do_list;
