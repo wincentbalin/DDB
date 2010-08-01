@@ -46,6 +46,22 @@ protected:
     const char* msg;
 };
 
+// Semantical workaround for strcmp()-like functions
+const static int EQUAL = 0;
+
+/*
+ * Comparators of strings.
+ */
+inline bool operator ==(std::string& s1, const char* s2)
+{
+    return s1.compare(s2) == EQUAL;
+}
+
+inline bool operator ==(const char* s1, std::string& s2)
+{
+    return s2.compare(s1) == EQUAL;
+}
+
 class DDB
 {
 public:
