@@ -74,6 +74,13 @@ enum text_distance
     NEXT_PARAGRAPH = 2
 };
 
+enum database_version
+{
+    UNDEFINED = 0,
+    BASIC = 1,
+    FAST = 2
+};
+
 class DDB
 {
 public:
