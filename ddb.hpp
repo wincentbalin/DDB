@@ -19,6 +19,8 @@
 
 #include <exception>
 #include <string>
+#include <vector>
+#include <utility>
 
 #include <sqlite3.h>
 
@@ -79,6 +81,19 @@ enum database_version
     UNDEFINED = 0,
     BASIC = 1,
     FAST = 2
+};
+
+class DatabaseStrategy
+{
+public:
+    virtual bool disc_present(std::string& disc_name) const = 0;
+    virtual void initialize_database(void) const = 0;
+    virtual void add_disc(std::string& disc_name, std::vector<std::pair<std::string, std::string> >& filenames) const = 0;
+    virtual void remove_disc(std::string& disc_name) const = 0;
+    virtual void list_contents(std::string& disc_name) const = 0;
+    virtual void list_discs(void) const = 0;
+    virtual void list_directories(std::string& disc_name, std::string& dirname) const = 0;
+    virtual void list_files(std::string& disc_name, std::string& dirname) const = 0;
 };
 
 class DDB
