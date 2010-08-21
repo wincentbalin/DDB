@@ -31,6 +31,37 @@
 #include <getopt.h>
 
 
+void
+BasicDatabaseStrategy::initialize_database(void)
+{
+}
+
+bool
+BasicDatabaseStrategy::disc_present(std::string& disc_name)
+{
+}
+
+void
+BasicDatabaseStrategy::add_disc(std::string& disc_name, std::string& disc_directory)
+{
+}
+
+void
+BasicDatabaseStrategy::remove_disc(std::string& disc_name)
+{
+}
+
+void
+BasicDatabaseStrategy::list_discs(void)
+{
+}
+
+void
+BasicDatabaseStrategy::list_files(std::string& disc_name, std::string& name, bool directories_only)
+{
+}
+
+
 DDB::DDB(int argc, char** argv) :
     db_filename(DATABASE_NAME), do_initialize(false),
     do_add(false), do_list(false), do_remove(false),
