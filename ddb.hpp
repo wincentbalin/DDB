@@ -88,7 +88,7 @@ class DatabaseStrategy
 public:
     virtual bool disc_present(std::string& disc_name) const = 0;
     virtual void initialize_database(void) const = 0;
-    virtual void add_disc(std::string& disc_name, std::vector<std::pair<std::string, std::string> >& filenames) const = 0;
+    virtual void add_disc(std::string& disc_name, std::string& disc_directory) const = 0;
     virtual void remove_disc(std::string& disc_name) const = 0;
     virtual void list_discs(void) const = 0;
     virtual void list_files(std::string& disc_name, std::string& name, bool directories_only) const = 0;
