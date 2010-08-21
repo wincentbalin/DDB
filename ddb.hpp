@@ -94,6 +94,17 @@ public:
     virtual void list_files(std::string& disc_name, std::string& name, bool directories_only) const = 0;
 };
 
+class BasicDatabaseStrategy : virtual public DatabaseStrategy
+{
+public:
+    virtual bool disc_present(std::string& disc_name);
+    virtual void initialize_database(void);
+    virtual void add_disc(std::string& disc_name, std::string& disc_directory);
+    virtual void remove_disc(std::string& disc_name);
+    virtual void list_discs(void);
+    virtual void list_files(std::string& disc_name, std::string& name, bool directories_only);
+};
+
 class DDB
 {
 public:
