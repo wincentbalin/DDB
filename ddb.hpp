@@ -90,10 +90,8 @@ public:
     virtual void initialize_database(void) const = 0;
     virtual void add_disc(std::string& disc_name, std::vector<std::pair<std::string, std::string> >& filenames) const = 0;
     virtual void remove_disc(std::string& disc_name) const = 0;
-    virtual void list_contents(std::string& disc_name) const = 0;
     virtual void list_discs(void) const = 0;
-    virtual void list_directories(std::string& disc_name, std::string& dirname) const = 0;
-    virtual void list_files(std::string& disc_name, std::string& dirname) const = 0;
+    virtual void list_files(std::string& disc_name, std::string& name, bool directories_only) const = 0;
 };
 
 class DDB
