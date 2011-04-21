@@ -22,7 +22,7 @@
 #include <vector>
 #include <utility>
 
-#include <sqlite3.h>
+#include "sqlite3.h"
 
 
 // Name of the database
