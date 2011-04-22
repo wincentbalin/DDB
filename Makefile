@@ -7,16 +7,15 @@ CC=gcc
 INCLUDES=-I.
 CFLAGS=-O2 -c $(INCLUDES)
 OBJS=ddb.o sqlite3.o
+LIBS=-lstdc++ -lboost_filesystem -lboost_system
 
 ifeq ($(findstring CYGWIN,$(shell uname)), CYGWIN)
 CFLAGS+=-mno-cygwin
 LDFLAGS+=-mno-cygwin
 endif
 
-ifdef COMSPEC
-LIBS=-lstdc++
-else
-LIBS=-lstdc++ -ldl -lpthread
+ifndef COMSPEC
+LIBS+=-ldl -lpthread
 endif
 
 all: ddb

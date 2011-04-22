@@ -19,17 +19,22 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <stack>
+#include <utility>
 
 #include <cstdlib>
 #include <cstring>
 #include <cctype>
 
-#include <dirent.h>
-#include <sys/stat.h>
-
 #include <getopt.h>
 
+//  Deprecated features not wanted
+#define BOOST_FILESYSTEM_NO_DEPRECATED
+
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+
+// Use a shortcut
+namespace fs = boost::filesystem;
 
 void
 BasicDatabaseStrategy::initialize_database(void)
@@ -344,15 +349,6 @@ DDB::is_disc_present(std::string& name)
 }
 
 bool
-DDB::is_directory(std::string& filename)
-{
-    struct stat dir_stat;
-
-    stat(filename.c_str(), &dir_stat);
-    return (S_ISDIR(dir_stat.st_mode)) ? true : false;   // ugly hack
-}
-
-bool
 DDB::add_disc(void)
 {
     const char* begin_transaction = "BEGIN";
@@ -362,6 +358,9 @@ DDB::add_disc(void)
 
     int result;
     char* error_message = NULL;
+
+    // Declare disc root directory
+    fs::path disc_path(argument);
 
     // Check whether the disc is already in the database
     if(is_disc_present(disc_name))
@@ -373,7 +372,7 @@ DDB::add_disc(void)
     }
 
     // Check whether the given argument is a directory
-    if(! is_directory(argument))
+    if(! fs::is_directory(disc_path))
     {
         std::string err_msg = argument + " is not a directory!";
         msg(CRITICAL, err_msg, NEXT_PARAGRAPH);
@@ -382,77 +381,22 @@ DDB::add_disc(void)
     }
 
     // Collect file names
-    std::vector<std::pair<std::string, std::string> > filenames;
-    std::string directory_filename = "";
-    std::string current_directory = argument;
-    std::string current_file;
-    std::string current_absolute_path;
-    std::stack <std::pair<std::string, DIR*> > directory_stack;
-    struct dirent* entry;
+    std::vector<std::pair<fs::path, bool> > filenames;
 
-    // Open the directory
-open_directory:
-    DIR* dir = opendir(current_directory.c_str());
+    // Open directory and iterate through it recursively
+    fs::path current_path;
+    bool current_path_is_directory;
+    fs::recursive_directory_iterator end;
 
-    if(dir == NULL)
+    for(fs::recursive_directory_iterator dir(disc_path);
+        dir != end;
+        dir++)
     {
-        std::string err_msg = "Error opening directory " + argument + " !";
-        msg(CRITICAL, err_msg, NEXT_PARAGRAPH);
-        return false;
-    }
+        current_path = dir->path();
+        current_path_is_directory = fs::is_directory(current_path);
 
-    // Add directory to the filenames
-    filenames.push_back(make_pair(current_directory, directory_filename));
-
-    while(true)
-    {
-        entry = readdir(dir);
-
-        // Check whether the directory ended
-        if(entry == NULL)
-        {
-            // Close directory
-            closedir(dir);
-
-            // If stack is not empty, pop parent directory from it
-            if(! directory_stack.empty())
-            {
-                std::pair<std::string, DIR*> directory_pair = directory_stack.top();
-                directory_stack.pop();
-
-                current_directory = directory_pair.first;
-                dir = directory_pair.second;
-
-                // Go to reading of the next entry of the directory
-                continue;
-            }
-            else // End searching files
-            {
-                break;
-            }
-        }
-
-        current_file = entry->d_name;
-
-        // Do not process relative directories
-        if(current_file == "." || current_file == "..")
-        {
-            continue;
-        }
-
-        current_absolute_path = current_directory + "/" + current_file;
-
-        // If current file is a directory, push the current one on the stack,
-        // make current file to the current directory and open it
-        if(is_directory(current_absolute_path))
-        {
-            directory_stack.push(make_pair(current_directory, dir));
-            current_directory = current_absolute_path;
-            goto open_directory;
-        }
-
-        // Add filename
-        filenames.push_back(make_pair(current_directory, current_file));
+        // Put current file name into vector
+        filenames.push_back(std::make_pair(current_path, current_path_is_directory));
     }
 
     // Sort filenames
@@ -460,10 +404,11 @@ open_directory:
 
     if(verbosity >= 4)
     {
-        std::vector<std::pair<std::string, std::string> >::const_iterator it;
-        for(it = filenames.begin(); it != filenames.end(); it++)
+        for(std::vector<std::pair<fs::path, bool> >::const_iterator it = filenames.begin();
+            it != filenames.end();
+            it++)
         {
-            std::cout << "Directory " << it->first << " Entry " << it->second << std::endl;
+            std::cout << (it->second ? "Directory" : "File") << " " << it->first << std::endl;
         }
     }
 
@@ -491,27 +436,25 @@ open_directory:
     sqlite3_bind_text(stmt, 3, disc_name.c_str(), -1, SQLITE_STATIC);
 
     //Add files
+    bool file_is_directory;
+    fs::path path;
     const char* d_entry;
     const char* f_entry;
-    const char* f_entry_directory = "NULL";
 
-    std::vector<std::pair<std::string, std::string> >::const_iterator i;
-    for(i = filenames.begin(); i != filenames.end(); i++)
+    for(std::vector<std::pair<fs::path, bool> >::const_iterator it = filenames.begin();
+        it != filenames.end();
+        it++)
     {
-        d_entry = i->first.c_str();
-        f_entry = i->second.c_str();
+        path = it->first;
+        file_is_directory = it->second;
 
-        // If needed, UNIXify directory
-        if(isalpha(d_entry[0]) && d_entry[1] == ':')
-        {
-            d_entry += 2;
-        }
+        d_entry = file_is_directory ?
+                    path.string().c_str() :
+                    path.parent_path().string().c_str();
 
-        // If entry is a directory, replace file with NULL
-        if(strlen(f_entry) == 0)
-        {
-            f_entry = f_entry_directory;
-        }
+        f_entry = file_is_directory ?
+                    "NULL" :
+                    path.filename().string().c_str();
 
         // Reset SQL statement
         sqlite3_reset(stmt);
