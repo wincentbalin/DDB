@@ -19,8 +19,6 @@
 
 #include <exception>
 #include <string>
-#include <vector>
-#include <utility>
 
 #include "sqlite3.h"
 
