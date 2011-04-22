@@ -413,7 +413,7 @@ DDB::add_disc(void)
     }
 
     // Begin SQL transaction
-    msg(VERBOSE, "Inserting files into the database...");
+    msg(VERBOSE, "Inserting files into database...");
     result =
     sqlite3_exec(db, begin_transaction, NULL, NULL, &error_message);
 
