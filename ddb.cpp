@@ -30,8 +30,7 @@
 //  Deprecated features not wanted
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
 
 // Use a shortcut
 namespace fs = boost::filesystem;
