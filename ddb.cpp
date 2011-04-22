@@ -262,7 +262,7 @@ DDB::run(void) throw (Exception)
     }
 
     // Close database
-    msg(VERBOSE, "Closing the database...");
+    msg(VERBOSE, "Closing database...");
     sqlite3_close(db);
     msg(DEBUG, "Done.");
 }
