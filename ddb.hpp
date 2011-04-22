@@ -65,7 +65,8 @@ enum msg_verbosity
     CRITICAL = 0,
     INFO = 1,
     VERBOSE = 2,
-    DEBUG = 3
+    DEBUG = 3,
+    VERBOSE_DEBUG = 4
 };
 
 enum text_distance

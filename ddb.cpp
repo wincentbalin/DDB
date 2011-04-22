@@ -402,7 +402,8 @@ DDB::add_disc(void)
     // Sort filenames
     sort(filenames.begin(),filenames.end());
 
-    if(verbosity >= 4)
+    // Print file names, if verbosity is set high enough
+    if(verbosity >= VERBOSE_DEBUG)
     {
         for(std::vector<std::pair<fs::path, bool> >::const_iterator it = filenames.begin();
             it != filenames.end();
