@@ -28,7 +28,7 @@ ddb.o:	ddb.cpp ddb.hpp
 	$(CC) $(CFLAGS) ddb.cpp
 
 sqlite3.o:
-	$(CC) $(CFLAGS) $(SQLITE_SRC)/$*.c
+	$(CC) $(CFLAGS) $*.c
 
 clean:
 	rm -f ddb ddb.exe *~ *.o
