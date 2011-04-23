@@ -1,18 +1,16 @@
 /**
-    ddb.hpp
-
-    Main include file.
-
-    Part of Disc Data Base.
-
-    Copyright (c) 2010 Wincent Balin
-
-    Based upon ddb.pl, created years before and serving faithfully until today.
-
-    Uses SQLite database version 3.
-
-    Published under MIT license. See LICENSE file for further information.
-*/
+ *  ddb.hpp
+ *
+ *  Main include part of Disc Data Base.
+ *
+ *  Copyright (c) 2010-2011 Wincent Balin
+ *
+ *  Based upon ddb.pl, created years before and serving faithfully until today.
+ *
+ *  Uses SQLite database version 3.
+ *
+ *  Published under MIT license. See LICENSE file for further information.
+ */
 
 #ifndef DDB_HPP
 #define DDB_HPP
