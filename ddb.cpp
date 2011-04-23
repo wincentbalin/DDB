@@ -35,6 +35,7 @@
 // Use a shortcut
 namespace fs = boost::filesystem;
 
+
 void
 BasicDatabaseStrategy::initialize_database(void)
 {
@@ -438,8 +439,8 @@ DDB::add_disc(void)
     //Add files
     bool file_is_directory;
     fs::path path;
-    const char* d_entry;
-    const char* f_entry;
+    std::string d_entry;
+    std::string f_entry;
 
     for(std::vector<std::pair<fs::path, bool> >::const_iterator it = filenames.begin();
         it != filenames.end();
@@ -449,19 +450,19 @@ DDB::add_disc(void)
         file_is_directory = it->second;
 
         d_entry = file_is_directory ?
-                    path.string().c_str() :
-                    path.parent_path().string().c_str();
+                    path.generic_string() :
+                    path.parent_path().generic_string();
 
         f_entry = file_is_directory ?
                     "NULL" :
-                    path.filename().string().c_str();
+                    path.filename().generic_string();
 
         // Reset SQL statement
         sqlite3_reset(stmt);
 
         // Bind directory and file
-        sqlite3_bind_text(stmt, 1, d_entry, -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(stmt, 2, f_entry, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 1, d_entry.c_str(), -1, SQLITE_STATIC);
+        sqlite3_bind_text(stmt, 2, f_entry.c_str(), -1, SQLITE_STATIC);
 
         // Execute SQL statement
         result =
