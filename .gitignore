@@ -4,4 +4,7 @@ sqlite3.h
 .cproject
 .settings
 Default
+*.o
+ddb
+ddb.exe
 
