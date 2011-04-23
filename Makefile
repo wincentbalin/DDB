@@ -3,10 +3,12 @@
 #
 
 CC=gcc
+CXX=g++
 
 INCLUDES=-I.
 CFLAGS=-O2 -c $(INCLUDES)
-OBJS=ddb.o sqlite3.o
+CXXFLAGS=$(CFLAGS)
+OBJS=db.o ddb.o sqlite3.o
 LIBS=-lstdc++ -lboost_filesystem -lboost_system
 
 ifeq ($(findstring CYGWIN,$(shell uname)), CYGWIN)
@@ -23,8 +25,11 @@ all: ddb
 ddb: $(OBJS)
 	$(CC) $(LDFLAGS) -o ddb $(OBJS) $(LIBS)
 
+db.o:	db.cpp db.hpp
+	$(CXX) $(CXXFLAGS) db.cpp
+
 ddb.o:	ddb.cpp ddb.hpp
-	$(CC) $(CFLAGS) ddb.cpp
+	$(CXX) $(CXXFLAGS) ddb.cpp
 
 sqlite3.o:
 	$(CC) $(CFLAGS) $*.c
