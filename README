@@ -30,16 +30,14 @@ Prerequisites:
 
 Steps:
 
-1. Get SQLite3 amalgamation and unpack it into the directory
-   with DDB sources and compile it
+1. Get SQLite3 amalgamation and unpack the files sqlite3.c and sqlite3.h
+   into the directory with DDB sources
 
 2. If needed, choose MinGW compiler as the default one with
 
        /usr/sbin/alternatives --config gcc
 
-3. Copy sqlite3.o object file into the directory with DDB sources
-
-4. Start compilation with
+3. Start compilation with
 
       make
 
