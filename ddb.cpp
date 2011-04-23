@@ -616,8 +616,10 @@ DDB::list_discs(void)
     // Sort and print results
     sort(discs.begin(), discs.end());
 
-    std::vector<std::string>::const_iterator i;
-    for(i = discs.begin(); i != discs.end(); i++)
+
+    for(std::vector<std::string>::const_iterator i = discs.begin();
+        i != discs.end();
+        i++)
     {
         std::cout << *i << std::endl;
     }
