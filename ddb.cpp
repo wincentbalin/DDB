@@ -27,6 +27,11 @@
 
 #include <getopt.h>
 
+#include <boost/foreach.hpp>
+
+// Use shortcut from example
+#define foreach BOOST_FOREACH
+
 //  Deprecated features not wanted
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 
@@ -34,6 +39,7 @@
 
 // Use a shortcut
 namespace fs = boost::filesystem;
+
 
 
 void
@@ -405,11 +411,10 @@ DDB::add_disc(void)
     // Print file names, if verbosity is set high enough
     if(verbosity >= VERBOSE_DEBUG)
     {
-        for(std::vector<std::pair<fs::path, bool> >::const_iterator it = filenames.begin();
-            it != filenames.end();
-            it++)
+        std::pair<fs::path, bool> it;
+        foreach(it, filenames)
         {
-            std::cout << (it->second ? "Directory" : "File") << " " << it->first << std::endl;
+            std::cout << (it.second ? "Directory" : "File") << " " << it.first << std::endl;
         }
     }
 
@@ -442,12 +447,11 @@ DDB::add_disc(void)
     std::string d_entry;
     std::string f_entry;
 
-    for(std::vector<std::pair<fs::path, bool> >::const_iterator it = filenames.begin();
-        it != filenames.end();
-        it++)
+    std::pair<fs::path, bool> it;
+    foreach(it, filenames)
     {
-        path = it->first;
-        file_is_directory = it->second;
+        path = it.first;
+        file_is_directory = it.second;
 
         d_entry = file_is_directory ?
                     path.generic_string() :
@@ -617,12 +621,9 @@ DDB::list_discs(void)
     // Sort and print results
     sort(discs.begin(), discs.end());
 
-
-    for(std::vector<std::string>::const_iterator i = discs.begin();
-        i != discs.end();
-        i++)
+    foreach(std::string disc, discs)
     {
-        std::cout << *i << std::endl;
+        std::cout << disc << std::endl;
     }
 
     return true;
@@ -673,10 +674,9 @@ DDB::list_directories(void)
     // Sort and print results
     sort(directories.begin(), directories.end());
 
-    std::vector<std::string>::const_iterator i;
-    for(i = directories.begin(); i != directories.end(); i++)
+    foreach(std::string directory, directories)
     {
-        std::cout << *i << std::endl;
+        std::cout << directory << std::endl;
     }
 
     return true;
@@ -706,7 +706,7 @@ DDB::list_files(void)
             // Store results
             std::string path;
             path.append((const char*) sqlite3_column_text(stmt, 0));
-            path.append("/");
+            path.push_back('/');
             path.append((const char*) sqlite3_column_text(stmt, 1));
             files.push_back(path);
         }
@@ -730,10 +730,9 @@ DDB::list_files(void)
     // Sort and print results
     sort(files.begin(), files.end());
 
-    std::vector<std::string>::const_iterator i;
-    for(i = files.begin(); i != files.end(); i++)
+    foreach(std::string file, files)
     {
-        std::cout << *i << std::endl;
+        std::cout << file << std::endl;
     }
 
     return true;
@@ -822,10 +821,10 @@ DDB::search_text(void)
     // Sort and print results
     sort(files.begin(), files.end());
 
-    std::vector<std::pair<std::string, std::string> >::const_iterator i;
-    for(i = files.begin(); i != files.end(); i++)
+    std::pair<std::string, std::string> discfile;
+    foreach(discfile, files)
     {
-        std::cout << i->first << ":\t" << i->second << std::endl;
+        std::cout << discfile.first << ":\t" << discfile.second << std::endl;
     }
 
     return true;
