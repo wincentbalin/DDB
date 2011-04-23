@@ -2,5 +2,6 @@ sqlite3.c
 sqlite3.h
 .project
 .cproject
+.settings
 Default
 
