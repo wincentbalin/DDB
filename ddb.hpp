@@ -35,11 +35,11 @@ public:
     DDBError(const char* cause) : msg(cause) {}
     DDBError(const std::string& s) : msg(s.c_str()) {}
     virtual ~DDBError() throw () {}
-    virtual const char* what() const throw () { return msg; }
-    virtual DDBError& operator=(const char* cause) { msg = cause; return *this; }
-    virtual DDBError& operator=(std::string& s) { msg = s.c_str(); return *this; }
+    virtual const std::string& get_message(void) const throw() { return msg; }
+    virtual const char* what() const throw () { return msg.c_str(); }
+    virtual DDBError& operator=(std::string& s) { msg = s; return *this; }
 protected:
-    const char* msg;
+    std::string msg;
 };
 
 // Semantical workaround for strcmp()-like functions
