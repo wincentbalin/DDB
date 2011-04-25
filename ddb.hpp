@@ -28,16 +28,16 @@
 #define TABLE_NAME "ddb"
 
 
-class Exception : public std::exception
+class DDBError : public std::exception
 {
 public:
-    Exception() {}
-    Exception(const char* cause) : msg(cause) {}
-    Exception(const std::string& s) : msg(s.c_str()) {}
-    virtual ~Exception() throw () {}
+    DDBError() {}
+    DDBError(const char* cause) : msg(cause) {}
+    DDBError(const std::string& s) : msg(s.c_str()) {}
+    virtual ~DDBError() throw () {}
     virtual const char* what() const throw () { return msg; }
-    virtual Exception& operator=(const char* cause) { msg = cause; return *this; }
-    virtual Exception& operator=(std::string& s) { msg = s.c_str(); return *this; }
+    virtual DDBError& operator=(const char* cause) { msg = cause; return *this; }
+    virtual DDBError& operator=(std::string& s) { msg = s.c_str(); return *this; }
 protected:
     const char* msg;
 };
@@ -107,7 +107,7 @@ class DDB
 public:
     DDB(int argc, char** argv);
     ~DDB(void);
-    void run(void) throw (Exception);
+    void run(void) throw (DDBError);
     // Constants
     const static char* discdb_schema;
 private:

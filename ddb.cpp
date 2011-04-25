@@ -184,7 +184,7 @@ DDB::~DDB(void)
 }
 
 void
-DDB::run(void) throw (Exception)
+DDB::run(void) throw (DDBError)
 {
     int result;
     bool success = true;
@@ -199,7 +199,7 @@ DDB::run(void) throw (Exception)
     {
         std::string msg = "Error while opening database " +
                           db_filename + " : " + sqlite3_errmsg(db);
-        throw Exception(msg);
+        throw DDBError(msg);
     }
 
     // Check whether the database has table ddb
@@ -208,7 +208,7 @@ DDB::run(void) throw (Exception)
         sqlite3_close(db);
 
         std::string msg = "Wrong database " + db_filename;
-        throw Exception(msg);
+        throw DDBError(msg);
     }
 
     // Choose functionality to run
@@ -220,7 +220,7 @@ DDB::run(void) throw (Exception)
         if(!success && verbosity >= 1)
         {
             std::string msg = "Error while adding disc " + disc_name;
-            throw Exception(msg);
+            throw DDBError(msg);
         }
     }
     else if(do_remove)
@@ -231,7 +231,7 @@ DDB::run(void) throw (Exception)
         if(!success && verbosity >= 1)
         {
             std::string msg = "Error while removing disc " + disc_name;
-            throw Exception(msg);
+            throw DDBError(msg);
         }
     }
     else if(do_list)
@@ -241,7 +241,7 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            throw Exception("Error while listing contents");
+            throw DDBError("Error while listing contents");
         }
     }
     else if(do_initialize)
@@ -251,7 +251,7 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            throw Exception("Error initializing database");
+            throw DDBError("Error initializing database");
         }
     }
     else    // If nothing else specified, search text
@@ -261,7 +261,7 @@ DDB::run(void) throw (Exception)
 
         if(!success && verbosity >= 1)
         {
-            throw Exception("Error searching");
+            throw DDBError("Error searching");
         }
     }
 
@@ -875,7 +875,7 @@ int main(int argc, char** argv)
     {
         ddb.run();
     }
-    catch(Exception& e)
+    catch(DDBError& e)
     {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
