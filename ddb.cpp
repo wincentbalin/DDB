@@ -439,7 +439,7 @@ DDB::add_disc(void)
     // Bind disc name
     sqlite3_bind_text(stmt, 3, disc_name.c_str(), -1, SQLITE_STATIC);
 
-    //Add files
+    // Add files
     bool file_is_directory;
     fs::path path;
     std::string d_entry;
