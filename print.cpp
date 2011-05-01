@@ -42,12 +42,12 @@ Print::get_verbosity(void)
 }
 
 void
-Print::msg(std::string& s, enum Verbosity message_verbosity)
+Print::msg(const char* text, enum Verbosity message_verbosity)
 {
     // Print message only if its verbosity is at least as severe as the one specified
     if(message_verbosity <= specified_verbosity)
     {
-        std::cout << s << std::endl;
+        std::cout << text << std::endl;
     }
 }
 

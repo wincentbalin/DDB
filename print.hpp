@@ -32,7 +32,7 @@ public:
     Print(enum Verbosity verbosity = CRITICAL);
     virtual ~Print();
     enum Verbosity get_verbosity(void);
-    void msg(std::string& text, enum Verbosity message_verbosity);
+    void msg(const char* text, enum Verbosity message_verbosity);
     void add_disc(const char* disc_name);
     void add_directory(const char* disc_name, const char* directory);
     void add_file(const char* disc_name, const char* directory, const char* file);
