@@ -33,6 +33,12 @@ Print::~Print()
 {
 }
 
+enum Print::Verbosity
+Print::get_verbosity(void)
+{
+    return specified_verbosity;
+}
+
 void
 Print::msg(std::string& s, enum Verbosity message_verbosity)
 {
