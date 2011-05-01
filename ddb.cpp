@@ -431,6 +431,7 @@ DDB::add_disc(void)
 
         return false;
     }
+
     // Prepare SQL statement
     sqlite3_stmt* stmt;
 
