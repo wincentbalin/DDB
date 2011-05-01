@@ -75,12 +75,16 @@ DB::open(const char* dbname, bool initialize) throw(DBError)
     // Assume database is not open already
     assert(db == NULL);
 
+    p->msg("Opening database...", Print::VERBOSE);
+
     // Open database
     result =
     sqlite3_open_v2(dbname, &db, SQLITE_OPEN_READWRITE, NULL);
 
     if(result != SQLITE_OK)
         throw(DBError(error_message), DBError::FILE_ERROR);
+
+    p->msg("Done.", Print::DEBUG);
 }
 
 void
@@ -89,6 +93,8 @@ DB::close(void) throw(DBError)
     std::string error_message = "Could not close database";
     int result;
 
+    p->msg("Closing database...", Print::VERBOSE);
+
     // Close database
     result =
     sqlite3_close(db);
@@ -96,6 +102,8 @@ DB::close(void) throw(DBError)
     // If something went wrong, throw an exception
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::FILE_ERROR));
+
+    p->msg("Done.", Print::DEBUG);
 }
 
 bool
@@ -138,6 +146,9 @@ DB::has_correct_format(void) throw(DBError)
 
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::FINALIZE_STATEMENT));
+
+    if(!format_is_correct)
+        p->msg("Database has wrong format!", Print::INFO);
 
     // Return correctness
     return format_is_correct;
@@ -233,6 +244,15 @@ DB::add_disc(const char* disc_name, const char* starting_path) throw(DBError)
     // Sort filenames
     sort(filenames.begin(),filenames.end());
 
+    // Print file names, if verbosity is set high enough
+    if(p->get_verbosity() >= Print::VERBOSE_DEBUG)
+    {
+        std::pair<fs::path, bool> it;
+        foreach(it, filenames)
+        {
+            std::cout << (it.second ? "Directory" : "File") << " " << it.first << std::endl;
+        }
+    }
 
     // Begin transaction
     result =
@@ -254,6 +274,8 @@ DB::add_disc(const char* disc_name, const char* starting_path) throw(DBError)
 
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::BIND_PARAMETER));
+
+    p->msg("Inserting files into database...", Print::VERBOSE);
 
     // Add files
     bool file_is_directory;
@@ -310,6 +332,8 @@ DB::add_disc(const char* disc_name, const char* starting_path) throw(DBError)
 
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::END_TRANSACTION));
+
+    p->msg("Done.", Print::DEBUG);
 }
 
 void
