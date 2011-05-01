@@ -22,12 +22,12 @@
 #include "sqlite3.h"
 
 #include "error.hpp"
-
+#include "print.hpp"
 
 class DB
 {
 public:
-    DB(void);
+    DB(Print* print);
     virtual ~DB(void) throw(DBError);
     void open(const char* dbname, bool initialize = false) throw(DBError);
     void close(void) throw(DBError);
@@ -42,6 +42,8 @@ public:
 private:
     void init(void);
 private:
+    // Printer
+    Print* p;
     // Database handle
     sqlite3* db;
     // Database version

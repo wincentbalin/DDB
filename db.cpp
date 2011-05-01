@@ -32,8 +32,11 @@
 namespace fs = boost::filesystem;
 
 
-DB::DB(void)
+DB::DB(Print* print)
 {
+    // Store pointer to the printer
+    p = print;
+
     // Perform initialization
     init();
 }
