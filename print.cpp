@@ -17,6 +17,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <algorithm>
+
 #include <boost/foreach.hpp>
 
 // Use shortcut from example
@@ -82,6 +84,9 @@ Print::add_file(const char* disc_name, const char* directory, const char* file)
 void
 Print::output(void)
 {
+    // Sort results
+    std::sort(results.begin(), results.end());
+
     // First, print one empty line to separate the following output
     std::cout << std::endl;
 
