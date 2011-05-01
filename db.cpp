@@ -74,7 +74,6 @@ DB::open(const char* dbname, bool initialize) throw(DBError)
     result =
     sqlite3_open_v2(dbname, &db, SQLITE_OPEN_READWRITE, NULL);
 
-    // If something went wrong, throw an exception
     if(result != SQLITE_OK)
         throw(DBError(std::string("Could not open file ") + dbname), DBError::FILE_ERROR);
 }
@@ -99,13 +98,13 @@ DB::has_correct_format(void) throw(DBError)
     const char* version_check = "SELECT COUNT(*) AS count, version FROM ddb_version";
     sqlite3_stmt* stmt;
     int result;
+
     bool format_is_correct = false;
 
     // Prepare SQL statement
     result =
     sqlite3_prepare_v2(db, version_check, -1, &stmt, NULL);
 
-    // Check correctness of statement preparation
     if(result != SQLITE_OK)
         throw(DBError("Could not check database correctness", DBError::PREPARE_STATEMENT));
 
@@ -113,7 +112,6 @@ DB::has_correct_format(void) throw(DBError)
     result =
     sqlite3_step(stmt);
 
-    // Check correctness of statement execution
     if(result != SQLITE_ROW)
         throw(DBError("Could not check database correctness", DBError::EXECUTE_STATEMENT));
 
@@ -128,7 +126,6 @@ DB::has_correct_format(void) throw(DBError)
     result =
     sqlite3_finalize(stmt);
 
-    // Check correctness of statement finalization
     if(result != SQLITE_OK)
         throw(DBError("Could not check database correctness", DBError::FINALIZE_STATEMENT));
 
@@ -142,14 +139,15 @@ DB::is_disc_present(const char* discname) throw(DBError)
     const char* disc_presence_check = "SELECT DISTINCT disc FROM ddb WHERE disc LIKE ?";
     sqlite3_stmt* stmt;
     int result;
+
     bool disc_present = false;
+
     std::string error_message = "Could not check disc presence";
 
     // Prepare SQL statement
     result =
     sqlite3_prepare_v2(db, disc_presence_check, -1, &stmt, NULL);
 
-    // Check correctness of statement preparation
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::PREPARE_STATEMENT));
 
@@ -176,7 +174,6 @@ DB::is_disc_present(const char* discname) throw(DBError)
     result =
     sqlite3_finalize(stmt);
 
-    // Check correctness of statement finalization
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::FINALIZE_STATEMENT));
 
@@ -237,8 +234,14 @@ DB::add_disc(const char* disc_name, const char* starting_path) throw(DBError)
 
     sqlite3_prepare_v2(db, add_entry, -1, &stmt, NULL);
 
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::PREPARE_STATEMENT));
+
     // Bind disc name
     sqlite3_bind_text(stmt, 3, disc_name, -1, SQLITE_STATIC);
+
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::BIND_PARAMETER));
 
     // Add files
     bool file_is_directory;
@@ -261,11 +264,24 @@ DB::add_disc(const char* disc_name, const char* starting_path) throw(DBError)
                     path.filename().generic_string();
 
         // Reset SQL statement
+        result =
         sqlite3_reset(stmt);
 
+        if(result != SQLITE_OK)
+            throw(DBError(error_message, DBError::RESET_STATEMENT));
+
         // Bind directory and file
+        result =
         sqlite3_bind_text(stmt, 1, d_entry.c_str(), -1, SQLITE_STATIC);
+
+        if(result != SQLITE_OK)
+            throw(DBError(error_message, DBError::BIND_PARAMETER));
+
+        result =
         sqlite3_bind_text(stmt, 2, f_entry.c_str(), -1, SQLITE_STATIC);
+
+        if(result != SQLITE_OK)
+            throw(DBError(error_message, DBError::BIND_PARAMETER));
 
         // Execute SQL statement
         result =
@@ -290,25 +306,37 @@ DB::remove_disc(const char* disc_name) throw(DBError)
     const char* remove_query = "DELETE FROM ddb WHERE disc=?";
 
     int result;
-    sqlite3_stmt* stmt;
 
     std::string error_message = std::string("Could not remove disc ") + disc_name;
 
     // Initialize and prepare SQL statement
+    sqlite3_stmt* stmt;
+
+    result =
     sqlite3_prepare_v2(db, remove_query, -1, &stmt, NULL);
 
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::PREPARE_STATEMENT));
+
+    result =
     sqlite3_bind_text(stmt, 1, disc_name, -1, SQLITE_STATIC);
+
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::BIND_PARAMETER));
 
     // Execute SQL statement
     result =
     sqlite3_step(stmt);
 
-    // Check for errors
     if(result != SQLITE_DONE)
         throw(DBError(error_message, DBError::EXECUTE_STATEMENT));
 
     // Clean up
+    result =
     sqlite3_finalize(stmt);
+
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::FINALIZE_STATEMENT));
 }
 
 void
