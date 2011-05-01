@@ -143,6 +143,7 @@ DB::is_disc_present(const char* discname) throw(DBError)
     sqlite3_stmt* stmt;
     int result;
     bool disc_present = false;
+    std::string error_message = "Could not check disc presence";
 
     // Prepare SQL statement
     result =
@@ -150,7 +151,7 @@ DB::is_disc_present(const char* discname) throw(DBError)
 
     // Check correctness of statement preparation
     if(result != SQLITE_OK)
-        throw(DBError("Could not check disc presence", DBError::PREPARE_STATEMENT));
+        throw(DBError(error_message, DBError::PREPARE_STATEMENT));
 
     // Execute SQL statement
     result =
@@ -168,7 +169,7 @@ DB::is_disc_present(const char* discname) throw(DBError)
     else
     {
         // We got an error
-        throw(DBError("Could not check disc presence", DBError::EXECUTE_STATEMENT));
+        throw(DBError(error_message, DBError::EXECUTE_STATEMENT));
     }
 
     // Finalize SQL statement
@@ -177,7 +178,7 @@ DB::is_disc_present(const char* discname) throw(DBError)
 
     // Check correctness of statement finalization
     if(result != SQLITE_OK)
-        throw(DBError("Could not check disc presence", DBError::FINALIZE_STATEMENT));
+        throw(DBError(error_message, DBError::FINALIZE_STATEMENT));
 
     // Return disc presence
     return disc_present;
