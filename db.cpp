@@ -68,6 +68,8 @@ DB::~DB(void) throw(DBError)
 void
 DB::open(const char* dbname, bool initialize) throw(DBError)
 {
+    std::string error_message = std::string("Could not open file ") + dbname;
+
     int result;
 
     // Assume database is not open already
@@ -78,12 +80,13 @@ DB::open(const char* dbname, bool initialize) throw(DBError)
     sqlite3_open_v2(dbname, &db, SQLITE_OPEN_READWRITE, NULL);
 
     if(result != SQLITE_OK)
-        throw(DBError(std::string("Could not open file ") + dbname), DBError::FILE_ERROR);
+        throw(DBError(error_message), DBError::FILE_ERROR);
 }
 
 void
 DB::close(void) throw(DBError)
 {
+    std::string error_message = "Could not close database";
     int result;
 
     // Close database
@@ -92,13 +95,15 @@ DB::close(void) throw(DBError)
 
     // If something went wrong, throw an exception
     if(result != SQLITE_OK)
-        throw(DBError("Could not close database", DBError::FILE_ERROR));
+        throw(DBError(error_message, DBError::FILE_ERROR));
 }
 
 bool
 DB::has_correct_format(void) throw(DBError)
 {
     const char* version_check = "SELECT COUNT(*) AS count, version FROM ddb_version";
+
+    std::string error_message = "Could not check database correctness";
 
     int result;
 
@@ -111,14 +116,14 @@ DB::has_correct_format(void) throw(DBError)
     sqlite3_prepare_v2(db, version_check, -1, &stmt, NULL);
 
     if(result != SQLITE_OK)
-        throw(DBError("Could not check database correctness", DBError::PREPARE_STATEMENT));
+        throw(DBError(error_message, DBError::PREPARE_STATEMENT));
 
     // Execute SQL statement
     result =
     sqlite3_step(stmt);
 
     if(result != SQLITE_ROW)
-        throw(DBError("Could not check database correctness", DBError::EXECUTE_STATEMENT));
+        throw(DBError(error_message, DBError::EXECUTE_STATEMENT));
 
     // Result should have only one row
     if(sqlite3_column_int(stmt, 0) == 1)
@@ -132,7 +137,7 @@ DB::has_correct_format(void) throw(DBError)
     sqlite3_finalize(stmt);
 
     if(result != SQLITE_OK)
-        throw(DBError("Could not check database correctness", DBError::FINALIZE_STATEMENT));
+        throw(DBError(error_message, DBError::FINALIZE_STATEMENT));
 
     // Return correctness
     return format_is_correct;
