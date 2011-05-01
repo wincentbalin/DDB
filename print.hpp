@@ -34,6 +34,7 @@ public:
     void msg(std::string& text, enum Verbosity message_verbosity);
     void add_disc(const char* disc_name);
     void add_directory(const char* disc_name, const char* directory);
+    void add_file(const char* disc_name, const char* directory, const char* file);
     void output(void);
 private:
     enum Verbosity specified_verbosity;
