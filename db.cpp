@@ -15,6 +15,7 @@
 #include "db.hpp"
 
 #include <sstream>
+#include <utility>
 
 #include <cassert>
 
@@ -384,5 +385,67 @@ DB::list_files(const char* disc_name, bool directories_only) throw(DBError)
 
     const char* list_query = directories_only ? list_directories_query : list_files_query;
 
+    std::string error_message = "Could not list " + directories_only ? "directories" : "files";
 
+    int result;
+
+    // Prepare statement
+    sqlite3_stmt* stmt;
+
+    result =
+    sqlite3_prepare_v2(db, list_query, -1, &stmt, NULL);
+
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::PREPARE_STATEMENT));
+
+    // Bind disc name
+    result =
+    sqlite3_bind_text(stmt, 1, disc_name, -1, SQLITE_STATIC);
+
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::BIND_PARAMETER));
+
+    // Get data
+    const char* directory;
+    const char* file;
+
+    while(true)
+    {
+        // Execute SQL statement
+        result =
+        sqlite3_step(stmt);
+
+        // Check whether we have at least one disc in the database
+        if(result == SQLITE_ROW)
+        {
+            if(directories_only)
+            {
+                directory = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+                p->add_directory(disc_name, directory);
+            }
+            else
+            {
+                directory = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+                file = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+                p->add_file(disc_name, directory, file);
+            }
+        }
+        else if(result == SQLITE_DONE)
+        {
+            // No more results
+            break;
+        }
+        else
+        {
+            // We got an error
+            throw(DBError(error_message, DBError::EXECUTE_STATEMENT));
+        }
+    }
+
+    // Finalize statement
+    result =
+    sqlite3_finalize(stmt);
+
+    if(result != SQLITE_OK)
+        throw(DBError(error_message, DBError::FINALIZE_STATEMENT));
 }
