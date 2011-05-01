@@ -35,10 +35,9 @@ public:
     bool is_disc_present(const char* disc_name) throw(DBError);
     void add_disc(const char* disc_name, const char* starting_directory) throw(DBError);
     void remove_disc(const char* disc_name) throw(DBError);
-    void list_files(const char* disc_name, bool directories_only = false) throw(DBError);
     void list_discs(void) throw(DBError);
-    void list_contents(const char* disc_name) throw(DBError);
-    void search_text(void) throw(DBError);
+    void list_files(const char* disc_name, bool directories_only = false) throw(DBError);
+    void search_text(const char* text, bool directories_only = false) throw(DBError);
 private:
     void init(void);
 private:
