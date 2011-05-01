@@ -31,6 +31,8 @@ public:
     };
     Print(enum Verbosity verbosity = CRITICAL);
     virtual ~Print();
+    void msg(std::string& text, enum Verbosity message_verbosity);
+    void output(void);
 private:
     enum Verbosity specified_verbosity;
     std::vector<std::string> results;
