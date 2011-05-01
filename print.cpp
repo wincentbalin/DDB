@@ -44,6 +44,12 @@ Print::msg(std::string& s, enum Verbosity message_verbosity)
 }
 
 void
+Print::add_disc(const char* disc_name)
+{
+    results.push_back(std::string(disc_name));
+}
+
+void
 Print::output(void)
 {
     // First, print one empty line to separate the following output

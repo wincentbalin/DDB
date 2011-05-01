@@ -32,6 +32,7 @@ public:
     Print(enum Verbosity verbosity = CRITICAL);
     virtual ~Print();
     void msg(std::string& text, enum Verbosity message_verbosity);
+    void add_disc(const char* disc_name);
     void output(void);
 private:
     enum Verbosity specified_verbosity;
