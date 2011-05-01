@@ -96,12 +96,14 @@ bool
 DB::has_correct_format(void) throw(DBError)
 {
     const char* version_check = "SELECT COUNT(*) AS count, version FROM ddb_version";
-    sqlite3_stmt* stmt;
+
     int result;
 
     bool format_is_correct = false;
 
     // Prepare SQL statement
+    sqlite3_stmt* stmt;
+
     result =
     sqlite3_prepare_v2(db, version_check, -1, &stmt, NULL);
 
@@ -137,7 +139,7 @@ bool
 DB::is_disc_present(const char* discname) throw(DBError)
 {
     const char* disc_presence_check = "SELECT DISTINCT disc FROM ddb WHERE disc LIKE ?";
-    sqlite3_stmt* stmt;
+
     int result;
 
     bool disc_present = false;
@@ -145,6 +147,8 @@ DB::is_disc_present(const char* discname) throw(DBError)
     std::string error_message = "Could not check disc presence";
 
     // Prepare SQL statement
+    sqlite3_stmt* stmt;
+
     result =
     sqlite3_prepare_v2(db, disc_presence_check, -1, &stmt, NULL);
 
