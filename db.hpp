@@ -15,11 +15,39 @@
 #ifndef DB_HPP
 #define DB_HPP
 
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include "sqlite3.h"
+
+#include "error.hpp"
+
+
 class DB
 {
 public:
-    DB();
-    virtual ~DB();
+    DB(void);
+    virtual ~DB(void) throw(DBError);
+    void open(const char* dbname, bool initialize = false) throw(DBError);
+    void close(void) throw(DBError);
+    bool has_correct_format(void) throw(DBError);
+    bool is_disc_present(const char* disc_name) throw(DBError);
+    void add_disc(const char* disc_name, const char* starting_directory) throw(DBError);
+    void remove_disc(const char* disc_name) throw(DBError);
+    void list_files(const char* disc_name, bool directories_only = false) throw(DBError);
+    void list_discs(void) throw(DBError);
+    void list_contents(const char* disc_name) throw(DBError);
+    void search_text(void) throw(DBError);
+private:
+    void init(void);
+private:
+    // Database handle
+    sqlite3* db;
+    // Database version
+    int version;
+    // Database creation SQL statements
+    std::vector<std::string> format;
 };
 
 #endif /* DB_HPP */
