@@ -330,6 +330,7 @@ DB::remove_disc(const char* disc_name) throw(DBError)
     if(result != SQLITE_OK)
         throw(DBError(error_message, DBError::PREPARE_STATEMENT));
 
+    // Bind disc name
     result =
     sqlite3_bind_text(stmt, 1, disc_name, -1, SQLITE_STATIC);
 
