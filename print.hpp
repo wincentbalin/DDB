@@ -29,11 +29,11 @@ public:
         DEBUG = 3,
         VERBOSE_DEBUG = 4
     };
-    //
-    Print();
+    Print(enum Verbosity verbosity = CRITICAL);
     virtual ~Print();
 private:
-    enum Verbosity verbosity;
+    enum Verbosity specified_verbosity;
+    std::vector<std::string> results;
 };
 
 #endif /* PRINT_HPP */

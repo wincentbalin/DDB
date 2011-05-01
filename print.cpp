@@ -16,10 +16,11 @@
 
 #include <iostream>
 
-Print::Print()
-{
-    // TODO Auto-generated constructor stub
 
+Print::Print(enum Verbosity verbosity)
+{
+    // Store specified verbosity
+    specified_verbosity = verbosity;
 }
 
 Print::~Print()
