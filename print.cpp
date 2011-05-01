@@ -50,6 +50,18 @@ Print::add_disc(const char* disc_name)
 }
 
 void
+Print::add_directory(const char* disc_name, const char* directory)
+{
+    std::ostringstream line;
+
+    // Create an output line
+    line << disc_name << ':' << '\t' << directory << std::endl;
+
+    // Push line to results
+    results.push_back(line.str());
+}
+
+void
 Print::output(void)
 {
     // First, print one empty line to separate the following output
